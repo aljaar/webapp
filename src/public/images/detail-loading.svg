@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1322.9375" viewBox="0 0 1180 1322.9375" preserveAspectRatio="none">
+  <rect x="0" y="0" width="100%" height="100%" clip-path="url(#clip-uw9h0g)" style="fill: url('#fill-6fizv7')" />
+  <defs>
+    <clipPath id="clip-uw9h0g">
+      <rect rx="3" ry="3" x="554" y="0" width="234.796875" height="32" />
+      <rect rx="3" ry="3" x="554" y="48.1875" width="219.4375" height="16" />
+      <rect rx="3" ry="3" x="554" y="106.28125" width="295.03125" height="21" />
+      <rect rx="3" ry="3" x="554" y="141.28125" width="196.8125" height="21" />
+      <rect rx="3" ry="3" x="554" y="176.28125" width="154.71875" height="21" />
+      <rect rx="3" ry="3" x="554" y="211.28125" width="165.75" height="21" />
+      <rect rx="3" ry="3" x="0" y="370.34375" width="89.28125" height="17" />
+      <rect rx="3" ry="3" x="0" y="413.75" width="1180" height="25" />
+      <rect rx="3" ry="3" x="0" y="443.75" width="1180" height="25" />
+      <rect rx="3" ry="3" x="0" y="473.75" width="1180" height="25" />
+      <rect rx="3" ry="3" x="0" y="503.75" width="1180" height="25" />
+      <rect rx="3" ry="3" x="0" y="581.953125" width="58.125" height="17" />
+      <rect rx="3" ry="3" x="18" y="626.75" width="111.34375" height="16" />
+      <rect rx="3" ry="3" x="18" y="650.84375" width="106.765625" height="16" />
+      <rect rx="3" ry="3" x="307.5" y="626.75" width="76.15625" height="16" />
+      <rect rx="3" ry="3" x="307.5" y="650.84375" width="95.0625" height="16" />
+      <rect rx="3" ry="3" x="597" y="581.953125" width="62.234375" height="17" />
+      <rect rx="3" ry="3" x="615" y="626.75" width="78.5625" height="16" />
+      <rect rx="3" ry="3" x="615" y="650.84375" width="37.171875" height="16" />
+      <rect rx="3" ry="3" x="615" y="674.9375" width="52.125" height="16" />
+      <rect rx="3" ry="3" x="904.5" y="626.75" width="67.734375" height="16" />
+      <rect rx="3" ry="3" x="904.5" y="650.84375" width="98.921875" height="16" />
+      <rect rx="3" ry="3" x="72.6875" y="716.640625" width="84.734375" height="69" />
+      <rect rx="3" ry="3" x="161.0625" y="763.640625" width="28.65625" height="18" />
+      <rect rx="3" ry="3" x="258.40625" y="723.640625" width="92.359375" height="16" />
+      <rect rx="3" ry="3" x="258.40625" y="1006.140625" width="130.28125" height="16" />
+      <rect rx="3" ry="3" x="0" y="0" width="512" height="344.640625" />
+      <rect rx="3" ry="3" x="40.6875" y="746.140625" width="24" height="24" />
+      <rect rx="3" ry="3" x="258.40625" y="758.34375" width="921.59375" height="69.09375" />
+      <rect rx="3" ry="3" x="258.40625" y="841.4375" width="921.59375" height="88.09375" />
+      <rect rx="3" ry="3" x="1092.53125" y="943.53125" width="87.46875" height="44" />
+    </clipPath>
+    <linearGradient id="fill-6fizv7">
+      <stop offset="0.599964" stop-color="#f3f3f3" stop-opacity="1">
+        <animate attributeName="offset" values="-2; -2; 1" keyTimes="0; 0.25; 1" dur="2s" repeatCount="indefinite"></animate>
+      </stop>
+      <stop offset="1.59996" stop-color="#ecebeb" stop-opacity="1">
+        <animate attributeName="offset" values="-1; -1; 2" keyTimes="0; 0.25; 1" dur="2s" repeatCount="indefinite"></animate>
+      </stop>
+      <stop offset="2.59996" stop-color="#f3f3f3" stop-opacity="1">
+        <animate attributeName="offset" values="0; 0; 3" keyTimes="0; 0.25; 1" dur="2s" repeatCount="indefinite"></animate>
+      </stop>
+    </linearGradient>
+  </defs>
+</svg>
