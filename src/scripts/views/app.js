@@ -24,6 +24,7 @@ class App {
   }
 
   _initialCustomElement() {
+    customElements.define('navigation-navbar', NavigationNavbar);
   }
 
   async renderPage() {
