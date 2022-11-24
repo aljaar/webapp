@@ -1,0 +1,94 @@
+body {
+  background-color: #f7f7f7;
+}
+
+header .header-content {
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  margin: 0px auto;
+  height: 60px;
+}
+header .header-logo {
+  width: auto;
+  height: 33px;
+  margin-right: 20px;
+}
+header .header-logo iconify-icon {
+  margin-left: 0.625rem;
+}
+
+
+#main-page {
+  background-color: white;
+  position: relative;
+  max-width: 480px;
+  width: 100%;
+  margin: 0px auto;
+  box-sizing: border-box;
+  top: 60px;
+  padding: 0px 16px 80px;
+  min-height: calc(100vh - 60px);
+}
+
+navigation-navbar {
+  list-style-type: none;
+  display: inline-block;
+  border-width: 1px 0px 0px;
+  border-right-style: initial;
+  border-bottom-style: initial;
+  border-left-style: initial;
+  border-right-color: initial;
+  border-bottom-color: initial;
+  border-left-color: initial;
+  border-image: initial;
+  font-weight: 600;
+  line-height: 13px;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+  width: 100%;
+  max-width: 480px;
+  position: fixed;
+  bottom: 0px;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 2;
+  padding: 10px;
+  font-size: 1em;
+  border-top-style: solid;
+  border-top-color: rgb(222, 222, 222);
+  margin: 0px;
+  background-color: rgb(255, 255, 255);
+}
+navigation-navbar .menu-item {
+  display: inline-block;
+  width: calc(20% - 6px);
+  font-size: 10px;
+  cursor: pointer;
+}
+navigation-navbar .menu-item .menu-item--icon {
+  position: relative;
+  padding-top: 4px;
+  margin-bottom: 4px;
+}
+navigation-navbar .menu-item .menu-item--icon iconify-icon {
+  @apply text-gray-400;
+  display: inline-block;
+  font-size: 24px;
+}
+navigation-navbar .menu-item .menu-item--text {
+  @apply text-gray-400;
+  white-space: nowrap;
+  display: inline-block;
+}
+navigation-navbar .menu-item.active .menu-item--icon iconify-icon {
+  @apply text-emerald-600;
+}
+navigation-navbar .menu-item.active .menu-item--text {
+  @apply text-emerald-600;
+}
