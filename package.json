@@ -70,6 +70,7 @@
     "@turf/center": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "alpinejs": "^3.10.5",
+    "dayjs": "^1.11.6",
     "iconify-icon": "^1.0.0",
     "idb": "^7.1.0",
     "joi": "^17.7.0",
