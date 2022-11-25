@@ -19,6 +19,16 @@ export const useProduct = (product) => {
   const images = product.product_images;
   const [analytics] = product.product_analytics;
 
+  if (product.profile && product.profile.length > 0) {
+    product.profile = product.profile[0];
+  } else {
+    product.profile = {
+      full_name: 'Anonymouse',
+      avatar_url: 'https://iifjmhhbusjlypxbpniy.supabase.co/storage/v1/object/public/avatars/public/avatar.default.webp',
+      rating: 0
+    }
+  }
+
   delete product.product_tags;
   delete product.product_images;
   delete product.product_analytics;
