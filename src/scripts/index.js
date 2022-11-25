@@ -11,7 +11,7 @@ import Alpine from 'alpinejs';
 import App from './views/app';
 // import ServiceWorker from './utils/sw.register';
 
-window.alpine = Alpine;
+window.Alpine = Alpine;
 
 const app = new App({
   content: document.querySelector('#main-content'),
