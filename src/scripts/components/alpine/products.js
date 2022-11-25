@@ -3,6 +3,9 @@ import { service } from '../../sdk';
 export default () => ({
   items: [],
   itemsAll: [],
+  filter: {
+    open: false
+  },
   async init() {
     // const { data: products } = await service.lists.near(200);
     // console.log(products)

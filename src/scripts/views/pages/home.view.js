@@ -5,7 +5,7 @@ const HomeView = {
     return String.raw`
       <button id="login" class="hidden">Login</button>
 
-      <div x-data="products" class="flex flex-col pt-4 gap-4">
+      <div x-data="products" class="flex flex-col px-4 pt-4 gap-4">
         <!-- Search -->
         <form>   
           <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Search</label>
@@ -19,7 +19,7 @@ const HomeView = {
 
         <!-- Filter -->
         <div class="flex gap-3">
-          <button class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
+          <button @click="filter.open = !filter.open" type="button" class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
             <iconify-icon icon="ri:filter-3-fill"></iconify-icon>
           </button>
           <button class="text-white bottom-2.5 bg-gray-500 hover:bg-gray-800 focus:ring-2 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
@@ -42,7 +42,7 @@ const HomeView = {
                   <h3 x-text="item.title" class=""></h3>
                 </a>
                 <div class="flex gap-2 text-xs items-center">
-                  <img x-bind:data-src="item.profile.avatar_url" class="lazyload rounded-full w-4" alt="">
+                  <img x-bind:data-src="item.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload rounded-full w-4" alt="">
                   <span x-text="item.profile.full_name"></span>
                 </div>
                 <div class="flex gap-4">
@@ -62,6 +62,44 @@ const HomeView = {
               </div>
             </div>
           </template>
+        </div>
+
+        <div class="sheet-modal bg-white border-t p-4 border-t-gray-200 " x-bind:class="{'active': filter.open}">
+          <div class="flex flex-col gap-2 divide-y">
+              <div class="pt-2 flex justify-between">
+                <h4 class="">Berdasarkan X</h4>
+                <div class="flex gap-2">
+                  <button class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
+                    <iconify-icon icon="ri:sort-asc" inline></iconify-icon>
+                  </button>
+                  <button class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
+                    <iconify-icon icon="ri:sort-desc" inline></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="pt-2 flex justify-between">
+                <h4 class="">Berdasarkan X</h4>
+                <div class="flex gap-2">
+                  <button class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
+                    <iconify-icon icon="ri:sort-asc" inline></iconify-icon>
+                  </button>
+                  <button class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
+                    <iconify-icon icon="ri:sort-desc" inline></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="pt-2 flex justify-between">
+                <h4 class="">Berdasarkan X</h4>
+                <div class="flex gap-2">
+                  <button class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
+                    <iconify-icon icon="ri:sort-asc" inline></iconify-icon>
+                  </button>
+                  <button class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
+                    <iconify-icon icon="ri:sort-desc" inline></iconify-icon>
+                  </button>
+                </div>
+              </div>
+          </div>
         </div>
       </div>
     `;
