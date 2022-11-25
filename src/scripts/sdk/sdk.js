@@ -170,14 +170,20 @@ function Aljaar({ supabase }) {
         );
 
         if (!product) return;
-
+        
         const isOwner = (product.user_id === states.user.id);
         const transactionRPC = isOwner ? 'get_transactions' : 'count_transactions';
 
         const { data: transaction } = await wrapper(() => supabase.rpc(transactionRPC, {
           p_id: id
         }));
+        const { data: profile } = await wrapper(() => supabase
+          .from('profiles')
+          .select('full_name, avatar_url, phone, rating')
+          .eq('user_id', product.user_id)
+        );
 
+        product.profile = profile;
         product.transaction = transaction;
 
         await supabase.rpc('increment_view', {
@@ -250,7 +256,6 @@ function Aljaar({ supabase }) {
           const [ lat, lon ] = product.drop_point;
           
           product.drop_point = `SRID=4326;POINT(${lon} ${lat})`;
-          console.log(product.drop_point)
         }
 
         const tasks = [
