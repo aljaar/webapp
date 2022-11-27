@@ -20,6 +20,7 @@ class App {
   _initialAlpine() {
     this._alpine.data('product', product);
     this._alpine.data('products', products);
+    this._alpine.data('transactions', transactions);
     this._alpine.start();
   }
 
@@ -36,7 +37,7 @@ class App {
       await this.beforeRenderPage();
       this._content.innerHTML = await page.render();
 
-      await page.afterRender();
+      await page.afterRender(this._alpine);
     } catch (error) {
       if (error.message === 'unauthorized') {
         console.info(`Redirect ke halaman login`)
