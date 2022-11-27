@@ -1,5 +1,7 @@
 import { v4 as uuid } from 'uuid';
-import { emitter, wrapper, useProduct, useGeoJson, useGoogleMaps, geographyToCoordinates } from './helpers/wrapper';
+import {
+  emitter, wrapper, useProduct, useGeoJson, useGoogleMaps, geographyToCoordinates,
+} from './helpers/wrapper';
 import * as validator from './helpers/validate';
 
 function Aljaar({ supabase }) {
@@ -7,13 +9,13 @@ function Aljaar({ supabase }) {
     auth_state: null,
     session: null,
     user: null,
-    tags: []
+    tags: [],
   };
   const redirect = {
-    onResetPassword: 'http://localhost:3000/#/reset-password'
-  }
+    onResetPassword: 'http://localhost:3000/#/reset-password',
+  };
 
-  const { data: { publicUrl: avatar_public } } = supabase.storage
+  const { data: { publicUrl: publicAvatar } } = supabase.storage
     .from('avatars')
     .getPublicUrl('public/avatar.default.webp');
 
@@ -21,11 +23,11 @@ function Aljaar({ supabase }) {
 
   emitter.on('aljaar:on:error', (error) => {
     console.info(error.message);
-  })
+  });
 
   supabase.auth.onAuthStateChange((event, session) => {
     states.auth_state = event;
-    
+
     if (session) {
       states.session = session;
       states.user = session.user;
@@ -56,41 +58,40 @@ function Aljaar({ supabase }) {
     emitter,
     raw: supabase,
     auth: {
-      async session () {
+      async session() {
         return wrapper(() => supabase.auth.getSession());
       },
       async user() {
         const { data: { user } } = await supabase.auth.getUser();
-        const { data: profile } = await supabase.from("profiles").select().eq("user_id", user.id).single();
+        const { data: profile } = await supabase.from('profiles').select().eq('user_id', user.id).single();
 
         user.profile = profile;
         states.user = user;
 
         return user;
       },
-      signInWith ({ type, credential = {} }) {
+      signInWith({ type, credential = {} }) {
         switch (type) {
           case 'google':
           case 'facebook':
           case 'github':
             return wrapper(() => supabase.auth.signInWithOAuth({
-              provider: type
+              provider: type,
             }));
           case 'email':
             return wrapper(() => supabase.auth.signInWithPassword({
               email: credential.email,
               password: credential.password,
             }));
-        
           default:
-            break;
+            return wrapper(() => ({ error: 'unknown method' }));
         }
       },
-      async signUp (data) {
+      async signUp(data) {
         const { value: validated, error } = await wrapper(() => validator.signUp(data));
-      
+
         if (error) {
-          return { data: null, error }
+          return { data: null, error };
         }
 
         return wrapper(() => supabase.auth.signUp({
@@ -99,148 +100,152 @@ function Aljaar({ supabase }) {
           options: {
             data: {
               full_name: validated.full_name,
-              avatar_url: avatar_public,
-              phone: validated.phone
-            }
-          }
-        }))
+              avatar_url: publicAvatar,
+              phone: validated.phone,
+            },
+          },
+        }));
       },
-      signOut () {
+      signOut() {
         return wrapper(() => supabase.auth.signOut());
       },
-      resetPassword (email) {
+      resetPassword(email) {
         return wrapper(() => supabase.auth.resetPasswordForEmail(email, {
           redirectTo: redirect.onResetPassword,
         }));
       },
-      updatePassword (password) {
+      updatePassword(password) {
         return wrapper(() => supabase.auth.updateUser({
-          password
+          password,
         }));
       },
-      updateLocation () {
+      updateLocation() {
         return new Promise((resolve) => {
           if (!navigator.geolocation) {
-            resolve({ data: null, error: { message: "Can't get user current location" } })
+            resolve({ data: null, error: { message: "Can't get user current location" } });
           }
-  
+
           navigator.geolocation.getCurrentPosition((position) => {
             const { error } = wrapper(() => supabase.from('profiles').update({
-              location: `SRID=4326;POINT(${position.coords.longitude} ${position.coords.latitude})`
-            }).eq('user_id', states.user.id))
+              location: `SRID=4326;POINT(${position.coords.longitude} ${position.coords.latitude})`,
+            }).eq('user_id', states.user.id));
 
             resolve({ data: position.coords, error });
           }, () => {
 
           }, {
-            maximumAge:60000,
-            timeout:5000,
-            enableHighAccuracy:true
+            maximumAge: 60000,
+            timeout: 5000,
+            enableHighAccuracy: true,
           });
-        })
-      }
+        });
+      },
     },
     user: {
-      me () {
+      me() {
         return states.user;
       },
-      update (data) {
+      update(data) {
 
       },
-      async getNeighborCount () {
-        return wrapper(() => supabase.rpc("get_neighbor_count", {
+      async getNeighborCount() {
+        return wrapper(() => supabase.rpc('get_neighbor_count', {
           radius: 200,
         }));
       },
-      async getNeighborProducts () {
-        const { data: count, error } = await supabase.rpc("get_neighbor_products", {
+      async getNeighborProducts() {
+        const { data: count, error } = await supabase.rpc('get_neighbor_products', {
           radius: 200,
         });
 
-        console.log(count, error)
+        console.log(count, error);
       },
-      async listedProductCount () {
+      async listedProductCount() {
         const { data: stats, error } = await supabase.rpc('product_stats');
 
-        if (error) return {
-          all_time: 0,
-          monthly: 0
-        };
+        if (error) {
+          return {
+            all_time: 0,
+            monthly: 0,
+          };
+        }
 
         return stats[0];
-      }
+      },
     },
     product: {
-      async detail (id) {
-        const { data: product } = await wrapper(() => supabase
+      async detail(id) {
+        const productResult = await wrapper(() => supabase
           .from('products')
-          .select(`*, product_images ( image ), likes (count), product_tags ( tags (id, name) ), product_analytics ( view )`)
+          .select('*, product_images ( image ), likes (count), product_tags ( tags (id, name) ), product_analytics ( view )')
           .eq('id', id)
-          .maybeSingle()
-        );
+          .maybeSingle());
 
-        if (!product) return;
-        
+        if (productResult.error) return productResult;
+
+        const { data: product } = productResult;
+
         const isOwner = (product.user_id === states.user.id);
         const transactionRPC = isOwner ? 'get_transactions' : 'count_transactions';
 
         const { data: transaction } = await wrapper(() => supabase.rpc(transactionRPC, {
-          p_id: id
+          p_id: id,
         }));
         const { data: profile } = await wrapper(() => supabase
           .from('profiles')
           .select('full_name, avatar_url, phone, rating')
-          .eq('user_id', product.user_id)
-        );
+          .eq('user_id', product.user_id));
 
         product.profile = profile;
         product.transaction = transaction;
 
         await supabase.rpc('increment_view', {
-          p_id: id
+          p_id: id,
         });
 
         return useProduct(product).format(usePublicUrl);
       },
-      async all () {
+      async all() {
         const { data } = await wrapper(() => supabase
           .from('products')
           .select('*, product_images ( image ), likes (count), product_tags ( tags (id, name) ), product_analytics ( view )')
-          .eq('user_id', states.user?.id)
-        );
+          .eq('user_id', states.user?.id));
 
-        const products = data.map(product => useProduct(product).format(usePublicUrl));
+        const products = data.map((product) => useProduct(product).format(usePublicUrl));
 
         return products;
       },
-      async create ({ data, images }) {
+      async create({ data, images }) {
         // Image Upload
         const uploadTasks = images.map(async (image) => {
           const ext = image.name.split('.').pop();
           const filename = `${uuid()}.${ext}`;
 
-          const { data } = await wrapper(() => supabase.storage
+          const { data: imageResult } = await wrapper(() => supabase.storage
             .from('products')
             .upload(`${states.user.id}/${filename}`, image));
 
-          return data
+          return imageResult;
         });
 
         const results = await Promise.all(uploadTasks);
-        //const results = [ { path: '87789b6c-b404-4c96-8abc-3ec09e7f5ff9/7dde18ab-36c8-4a41-a49e-6d04a637dd7e.png' } ];
-        const uploadedImages = results.map(image => image.path);
+        // const results = [{
+        //  path: '87789b6c-b404-4c96-8abc-3ec09e7f5ff9/7dde18ab-36c8-4a41-a49e-6d04a637dd7e.png'
+        // }];
+        const uploadedImages = results.map((image) => image.path);
 
-        const [ lat, lon ] = data.drop_point;
+        const [lat, lon] = data.drop_point;
 
         const unvalidatedProduct = {
           ...data,
-          images: uploadedImages
-        }
+          images: uploadedImages,
+        };
 
-        const { value: product, error } = await wrapper(() => validator.product(unvalidatedProduct));
+        const { value: product, error } = await wrapper(() => validator
+          .product(unvalidatedProduct));
 
         if (error) {
-          return { data: null, error }
+          return { data: null, error };
         }
 
         product.drop_point = `SRID=4326;POINT(${lon} ${lat})`;
@@ -248,10 +253,10 @@ function Aljaar({ supabase }) {
         return wrapper(() => supabase.rpc('create_product', {
           product_raw: JSON.stringify(product),
           images: uploadedImages,
-          drop_time: data.drop_time
+          drop_time: data.drop_time,
         }));
       },
-      async update (id, { data }) {
+      async update(id, { data }) {
         // TODO: validate data
         const { value: product, error } = await wrapper(() => validator.editProduct({
           ...data,
@@ -263,41 +268,41 @@ function Aljaar({ supabase }) {
         delete product.tags;
 
         if (product.drop_point) {
-          const [ lat, lon ] = product.drop_point;
-          
+          const [lat, lon] = product.drop_point;
+
           product.drop_point = `SRID=4326;POINT(${lon} ${lat})`;
         }
 
         const tasks = [
           wrapper(() => supabase.from('products').update({
-            ...product
-          }).eq('id', id))
+            ...product,
+          }).eq('id', id)),
         ];
 
         if (tags && tags.length > 0) {
           tasks.push(wrapper(() => supabase.rpc('add_product_tag', {
             p_id: id,
-            tags
+            tags,
           })));
         }
 
         const update = await Promise.all(tasks);
 
-        return {id, product, update};
+        return { id, product, update };
       },
-      async delete (id) {
+      async delete(id) {
         return wrapper(() => supabase.rpc('delete_product', {
-          p_id: id
+          p_id: id,
         }));
       },
-      async like (id) {
+      async like(id) {
         return wrapper(() => supabase.rpc('like_product', {
-          p_id: id
+          p_id: id,
         }));
       },
     },
     lists: {
-      near (radius, filter = {}) {
+      near(radius, filter = {}) {
         /**
          * Filter:
          * search
@@ -315,81 +320,82 @@ function Aljaar({ supabase }) {
         }
 
         if (filter.sort && filter.sort.column && filter.sort.type) {
-          filters.push(['order', filter.sort.column, { ascending: (filter.sort.type === 'asc') }])
+          filters.push(['order', filter.sort.column, { ascending: (filter.sort.type === 'asc') }]);
         }
 
-        const query = filters.reduce((chain, [ filter, ...args ]) => chain[filter](...args), supabase.rpc('get_near_products', {
-          radius
+        const query = filters.reduce((chain, [prev, ...args]) => chain[prev](...args), supabase.rpc('get_near_products', {
+          radius,
         }));
 
-        return wrapper(() => query)
+        return wrapper(() => query);
       },
-      async nearMap (radius, filter = {}) {
+      async nearMap(radius, filter = {}) {
         const { data: products, error } = await this.near(radius, filter);
 
         if (error) return { data: null, error };
 
         return {
           data: useGeoJson(products),
-          error: null
+          error: null,
         };
-      }
+      },
     },
     tags: {
-      all () {
+      all() {
         return wrapper(() => supabase.from('tags').select('id, name'))
-          .then(result => {
+          .then((result) => {
             if (result.error) return result;
-            
+
             states.tags = result.data;
 
             return result;
           });
       },
-      async search (query) {
-        return wrapper(() => supabase.from('tags').select('id, name').limit(8).ilike('name', `%${query}%`))
+      async search(query) {
+        return wrapper(() => supabase.from('tags').select('id, name').limit(8).ilike('name', `%${query}%`));
       },
-      useCache () {
+      useCache() {
         return {
-          all () {
+          all() {
             return states.tags;
           },
-          search (query) {
-            console.log(states.tags)
+          search(query) {
+            console.log(states.tags);
 
-            return states.tags.filter(item => (item.name.toLowerCase().includes(query.toLowerCase())))
-          }
-        }
-      }
+            return states.tags.filter((item) => (item.name.toLowerCase()
+              .includes(query.toLowerCase())));
+          },
+        };
+      },
     },
     transaction: {
-      async waiting () {
+      async waiting() {
         const { data: transactions } = await supabase.from('transactions')
           .select('id, user_id, owner_id, product_id, created_at, products ( title, product_images (image) )')
           .eq('owner_id', states.user.id)
           .eq('status', 'waiting');
 
-        const user_id = transactions.map(tx => tx.user_id);
+        const userId = transactions.map((tx) => tx.user_id);
         const { data: users } = await supabase.from('profiles')
           .select('user_id, full_name, avatar_url, status')
-          .in('user_id', user_id);
+          .in('user_id', userId);
 
         return {
-          data: transactions.map(tx => ({
+          data: transactions.map((tx) => ({
             ...tx,
-            user: users.find(user => user.user_id == tx.user_id),
-          }))
-        }
+            user: users.find((user) => user.user_id === tx.user_id),
+          })),
+        };
       },
       // List of approved transactions and ready to pickup and need some review
-      needReviews () {
+      needReviews() {
         return wrapper(() => supabase.from('transactions')
           .select('*, products ( title, product_images (image) )')
           .eq('user_id', states.user.id)
           .eq('status', 'approved')
           .is('rating', null));
       },
-      async detail (id) {
+      async detail(id) {
         const result = await wrapper(() => supabase.from('transactions')
           .select('*, products (id, title, category, drop_time, drop_point, user_id, product_images (image)), transaction_logs (status, created_at)')
           .eq('user_id', states.user.id)
@@ -405,8 +411,9 @@ function Aljaar({ supabase }) {
 
           result.data.products = {
             ...result.data.products,
-            product_images: usePublicUrl(result.data.products.product_images[0].image).data.publicUrl,
-          }
+            product_images: usePublicUrl(result.data.products.product_images[0].image)
+              .data.publicUrl,
+          };
 
           result.data.profile = profile;
         }
@@ -419,63 +426,61 @@ function Aljaar({ supabase }) {
           .eq('user_id', states.user.id));
 
         if (!result.error) {
-          result.data = result.data.map(item => {
-            return {
-              ...item,
-              products: {
-                ...item.products,
-                product_images: usePublicUrl(item.products.product_images[0].image).data.publicUrl,
-              }
-            }
-          })
-
-          return result;
+          result.data = result.data.map((item) => ({
+            ...item,
+            products: {
+              ...item.products,
+              product_images: usePublicUrl(item.products.product_images[0].image).data.publicUrl,
+            },
+          }));
         }
+
+        return result;
       },
       request(id) {
         return wrapper(() => supabase.rpc('request_transactions', {
-          p_id: id
+          p_id: id,
         }));
       },
       approve(id) {
         return wrapper(() => supabase.rpc('response_transactions', {
           tx_id: id,
           response: 'approved',
-          reason: ''
+          reason: '',
         }));
       },
       reject(id, reason) {
         return wrapper(() => supabase.rpc('response_transactions', {
           tx_id: id,
           response: 'rejected',
-          reason
+          reason,
         }));
       },
-      review (id, { rating, comment }) {
+      review(id, { rating, comment }) {
         return wrapper(() => supabase.rpc('review_transactions', {
           tx_id: id,
           rating_value: rating,
-          comment_value: comment
+          comment_value: comment,
         }));
-      }
+      },
     },
     helpers: {
       usePublicUrl,
-      getLocation (geo) {
+      getLocation(geo) {
         return geographyToCoordinates(supabase, geo);
       },
-      googleMaps ({ start, stop }) {
+      googleMaps({ start, stop }) {
         const link = useGoogleMaps({ start, stop });
 
         return {
           link,
-          openLink () {
+          openLink() {
             window.open(link, '_blank');
-          }
-        }
-      }
-    }
-  }
+          },
+        };
+      },
+    },
+  };
 }
 
 export default Aljaar;
