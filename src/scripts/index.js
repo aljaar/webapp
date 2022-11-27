@@ -5,6 +5,7 @@ import 'lazysizes/plugins/parent-fit/ls.parent-fit';
 
 import '../styles/tailwind.css';
 import '../styles/main.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import 'notyf/notyf.min.css';
 
 import Alpine from 'alpinejs';
@@ -15,7 +16,7 @@ window.Alpine = Alpine;
 
 const app = new App({
   content: document.querySelector('#main-content'),
-  alpine: Alpine
+  alpine: Alpine,
 });
 
 window.addEventListener('hashchange', () => {
