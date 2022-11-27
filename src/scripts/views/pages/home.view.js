@@ -69,7 +69,7 @@ const HomeView = {
 
           <div class="flex flex-col gap-2 divide-y">
               <div class="pt-2 flex items-center justify-between">
-                <h4 class="">Jarak</h4>
+                <h4 class="font-bold">Jarak</h4>
                 <div class="flex gap-2">
                   <button 
                     @click="toggleFilter('distance', 'asc')"
@@ -88,7 +88,7 @@ const HomeView = {
                 </div>
               </div>
               <div class="pt-2 flex items-center justify-between">
-                <h4 class="">View</h4>
+                <h4 class="font-bold">View</h4>
                 <div class="flex gap-2">
                   <button 
                     @click="toggleFilter('view', 'asc')"
