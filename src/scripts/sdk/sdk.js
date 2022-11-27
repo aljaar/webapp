@@ -437,8 +437,11 @@ function Aljaar({ supabase }) {
     },
     helpers: {
       usePublicUrl,
-      googleMaps ({ start, end }) {
-        const link = useGoogleMaps({ start, end });
+      getLocation (geo) {
+        return geographyToCoordinates(supabase, geo);
+      },
+      googleMaps ({ start, stop }) {
+        const link = useGoogleMaps({ start, stop });
 
         return {
           link,
