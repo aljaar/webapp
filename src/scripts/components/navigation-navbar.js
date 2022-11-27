@@ -7,7 +7,7 @@ class NavigationNavbar extends HTMLElement {
     this.states = [
       { id: 'home', route: '/', },
       { id: 'maps', route: '/maps', },
-      { id: 'notif', route: '/notification', },
+      { id: 'transaksi', route: '/transactions', },
       { id: 'share', route: '/product', },
       { id: 'profile', route: '/profile', },
     ]
@@ -56,11 +56,11 @@ class NavigationNavbar extends HTMLElement {
         </div>
         <span class="menu-item--text inline-block">Share</span>
       </div>
-      <div id="navbar-notif" class="menu-item">
+      <div id="navbar-transaksi" class="menu-item">
         <div class="menu-item--icon">
-          <iconify-icon icon="ri:notification-4-line"></iconify-icon>
+          <iconify-icon icon="ri:hand-heart-line"></iconify-icon>
         </div>
-        <span class="menu-item--text inline-block">Notification</span>
+        <span class="menu-item--text inline-block">Transaksi</span>
       </div>
       <div id="navbar-profile" class="menu-item">
         <div class="menu-item--icon">

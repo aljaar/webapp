@@ -8,7 +8,7 @@ const routes = {
     .then((view) => view.default),
   '/maps': import(/* webpackChunkName: "maps-view" */ '../views/pages/maps.view')
     .then((view) => view.default),
-  '/notification': import(/* webpackChunkName: "notification-view" */ '../views/pages/notification.view')
+  '/transactions': import(/* webpackChunkName: "transactions-view" */ '../views/pages/transaction/lists.view')
     .then((view) => view.default),
   '/profile': import(/* webpackChunkName: "profile-view" */ '../views/pages/profile.view')
     .then((view) => view.default),
