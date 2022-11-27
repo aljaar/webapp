@@ -22,10 +22,10 @@ const HomeView = {
           <button @click="filter.open = !filter.open" type="button" class="text-white bottom-2.5 bg-emerald-500 hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-sm px-3 pt-2 pb-1">
             <iconify-icon icon="ri:filter-3-fill"></iconify-icon>
           </button>
-          <button @click="toggleCategory('food')" x-bind:class="useFilterCategoryClass('food')" class="rounded-lg text-sm px-3 pt-2 pb-1">
+          <button @click="toggleCategory('food')" x-bind:class="useFilterCategoryClass('food')" class="rounded-lg text-sm px-3 py-2">
             Food
           </button>
-          <button @click="toggleCategory('non-food')" x-bind:class="useFilterCategoryClass('non-food')" class="rounded-lg text-sm px-3 pt-2 pb-1">
+          <button @click="toggleCategory('non-food')" x-bind:class="useFilterCategoryClass('non-food')" class="rounded-lg text-sm px-3 py-2">
             Non-Food
           </button>
         </div>
@@ -35,11 +35,11 @@ const HomeView = {
           <template x-for="item in items">
             <div class="flex pt-2 pb-1 gap-4">
               <div class="">
-                <img class="lazyload w-32 h-24 object-cover rounded" x-bind:data-src="image(item.image)" alt="">
+                <img class="lazyload w-32 h-24 object-cover rounded" x-bind:data-src="image(item.image)" x-bind:alt="item.title">
               </div>
               <div class="flex flex-col gap-2">
                 <a x-bind:href="'/#/product/' + item.product_id">
-                  <h3 x-text="item.title" class=""></h3>
+                  <h3 x-text="item.title" class="font-bold"></h3>
                 </a>
                 <div class="flex gap-2 text-xs items-center">
                   <img x-bind:data-src="item.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload rounded-full w-4" alt="">
