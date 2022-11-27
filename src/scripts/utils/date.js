@@ -6,3 +6,4 @@ dayjs.locale('id');
 dayjs.extend(relativeTime);
 
 export const fromNow = (date) => dayjs(date).fromNow(true);
+export const format = (date, format = 'DD MMMM YYYY hh:mm:ss') => dayjs(date).format(format);
