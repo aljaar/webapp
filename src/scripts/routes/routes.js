@@ -10,6 +10,8 @@ const routes = {
     .then((view) => view.default),
   '/transactions': import(/* webpackChunkName: "transactions-view" */ '../views/pages/transaction/lists.view')
     .then((view) => view.default),
+  '/transactions/:id': import(/* webpackChunkName: "transactions-detail-view" */ '../views/pages/transaction/detail.view')
+    .then((view) => view.default),
   '/profile': import(/* webpackChunkName: "profile-view" */ '../views/pages/profile.view')
     .then((view) => view.default),
   '/product': import(/* webpackChunkName: "new-product-view" */ '../views/pages/product/new.view')
