@@ -90,7 +90,7 @@ export const useGoogleMaps = ({ start, stop }) => {
 export const geographyToCoordinates = async (supabase, geography) => {
   const { data: coordinates } = await supabase.rpc('geoencoder', {
     geo: geography
-  });
+  }).single();
 
   return coordinates;
 }
