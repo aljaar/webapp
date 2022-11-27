@@ -389,6 +389,25 @@ function Aljaar({ supabase }) {
           .eq('status', 'approved')
           .is('rating', null));
       },
+      async lists() {
+        const result = await wrapper(() => supabase.from('transactions')
+          .select('*, products (id, title, category, product_images (image))')
+          .eq('user_id', states.user.id));
+
+        if (!result.error) {
+          result.data = result.data.map(item => {
+            return {
+              ...item,
+              products: {
+                ...item.products,
+                product_images: usePublicUrl(item.products.product_images[0].image).data.publicUrl,
+              }
+            }
+          })
+
+          return result;
+        }
+      },
       request(id) {
         return wrapper(() => supabase.rpc('request_transactions', {
           p_id: id
