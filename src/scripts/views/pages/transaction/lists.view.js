@@ -4,7 +4,7 @@ class TransactionListsView {
       <div x-data="transactions" class="transactions">
         <div class="p-3 flex flex-col gap-3">
           <template x-for="transaction in transactions" :key="transaction.id">
-            <a x-bind:href="'/#/transaction/' + transaction.id" class="p-3 rounded-md shadow-mdl">
+            <a x-bind:href="'/#/transactions/' + transaction.id" class="p-3 rounded-md shadow-mdl">
               <div class="flex pb-3 items-center justify-between border-b border-b-gray-200">
                 <div class="flex items-center gap-3">
                   <template x-if="isCategory(transaction, 'food')">
