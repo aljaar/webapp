@@ -159,6 +159,16 @@ function Aljaar({ supabase }) {
 
         console.log(count, error)
       },
+      async listedProductCount () {
+        const { data: stats, error } = await supabase.rpc('product_stats');
+
+        if (error) return {
+          all_time: 0,
+          monthly: 0
+        };
+
+        return stats[0];
+      }
     },
     product: {
       async detail (id) {
