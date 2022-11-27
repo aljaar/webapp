@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
     "start-dev": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
     "build-image": "node commands/image-resize.js",
