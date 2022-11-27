@@ -42,18 +42,19 @@ class App {
       await page.afterRender(this._alpine);
     } catch (error) {
       if (error.message === 'unauthorized') {
-        console.info(`Redirect ke halaman login`)
+        console.info('Redirect ke halaman login');
       }
+
+      console.error(error);
 
       this._content.innerHTML = this._renderErrorNotFound();
     }
   }
 
-  async beforeRenderPage (url) {
+  async beforeRenderPage(url) {
     const { data: { session } } = await service.auth.session();
 
     if (!session) {
-      //throw new Error('unauthorized')
       if (!url.includes('/sign')) {
         toastHelpers.error('You need to login first');
       }
