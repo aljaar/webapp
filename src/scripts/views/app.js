@@ -1,8 +1,10 @@
 import product from '../components/alpine/product';
 import products from '../components/alpine/products';
+import transactions from '../components/alpine/transactions';
 import NavigationNavbar from '../components/navigation-navbar';
 import routes from '../routes/routes';
 import { service } from '../sdk';
+import toastHelpers from '../utils/toast.helpers';
 import UrlParser from '../utils/url.parser';
 
 class App {
@@ -52,6 +54,8 @@ class App {
 
     if (!session) {
       //throw new Error('unauthorized')
+      toastHelpers.error('You need to login first');
+      window.location.href = '/#/signin';
     } else {
       console.info(`passed`)
     }
