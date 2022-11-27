@@ -36,7 +36,7 @@ class App {
     try {
       const page = await routes[url];
       
-      await this.beforeRenderPage();
+      await this.beforeRenderPage(url);
       this._content.innerHTML = await page.render();
 
       await page.afterRender(this._alpine);
@@ -49,14 +49,20 @@ class App {
     }
   }
 
-  async beforeRenderPage () {
+  async beforeRenderPage (url) {
     const { data: { session } } = await service.auth.session();
 
     if (!session) {
       //throw new Error('unauthorized')
-      toastHelpers.error('You need to login first');
+      if (!url.includes('/sign')) {
+        toastHelpers.error('You need to login first');
+      }
+
       window.location.href = '/#/signin';
     } else {
+      if (!this._user) {
+        this._user = await service.auth.user();
+      }
       console.info(`passed`)
     }
   }
