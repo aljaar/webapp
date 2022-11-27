@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { emitter, wrapper, useProduct, useGeoJson, useGoogleMaps } from './helpers/wrapper';
+import { emitter, wrapper, useProduct, useGeoJson, useGoogleMaps, geographyToCoordinates } from './helpers/wrapper';
 import * as validator from './helpers/validate';
 
 function Aljaar({ supabase }) {
@@ -388,6 +388,30 @@ function Aljaar({ supabase }) {
           .eq('user_id', states.user.id)
           .eq('status', 'approved')
           .is('rating', null));
+      },
+      async detail (id) {
+        const result = await wrapper(() => supabase.from('transactions')
+          .select('*, products (id, title, category, drop_time, drop_point, user_id, product_images (image)), transaction_logs (status, created_at)')
+          .eq('user_id', states.user.id)
+          .eq('id', id)
+          .single());
+
+        if (!result.error) {
+          const userId = result.data.products.user_id;
+          const { data: profile } = await supabase.from('profiles')
+            .select('full_name, avatar_url')
+            .eq('user_id', userId)
+            .single();
+
+          result.data.products = {
+            ...result.data.products,
+            product_images: usePublicUrl(result.data.products.product_images[0].image).data.publicUrl,
+          }
+
+          result.data.profile = profile;
+        }
+
+        return result;
       },
       async lists() {
         const result = await wrapper(() => supabase.from('transactions')
