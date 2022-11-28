@@ -19,6 +19,8 @@ function Aljaar({ supabase }) {
     .from('avatars')
     .getPublicUrl('public/avatar.default.webp');
 
+  console.log(publicAvatar);
+
   const usePublicUrl = (path) => supabase.storage.from('products').getPublicUrl(path);
 
   emitter.on('aljaar:on:error', (error) => {
