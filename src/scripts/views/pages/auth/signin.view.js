@@ -63,32 +63,32 @@ const SignInView = {
           </div>
         </footer>
       </section>
-    `
+    `;
   },
-  async afterRender (alpine) {
+  async afterRender(alpine) {
     alpine.data('signin', () => ({
       credential: {
         email: null,
-        password: null
+        password: null,
       },
-      async signIn () {
+      async signIn() {
         const { data, error } = await service.auth.signInWith({
           type: 'email',
           credential: {
             email: 'nyanhashmail@gmail.com',
-            password: 'testpassword'
-          }
-        })
+            password: 'testpassword',
+          },
+        });
 
         if (error) {
-          toastHelpers.error('Whopss, login gagal.')
+          toastHelpers.error('Whopss, login gagal.');
         } else {
           toastHelpers.success('Login berhasil');
         }
       },
-      signInWithGoogle () {
+      signInWithGoogle() {
 
-      }
+      },
     }));
   }
 }
