@@ -14,7 +14,11 @@ const routes = {
     .then((view) => view.default),
   '/profile': import(/* webpackChunkName: "profile-view" */ '../views/pages/profile.view')
     .then((view) => view.default),
+  '/profile-edit': import(/* webpackChunkName: "profile-edit-view" */ '../views/pages/profile.edit.view')
+    .then((view) => view.default),
   '/product': import(/* webpackChunkName: "new-product-view" */ '../views/pages/product/new.view')
+    .then((view) => view.default),
+  '/product-edit': import(/* webpackChunkName: "edit-product-view" */ '../views/pages/product/edit.view')
     .then((view) => view.default),
   '/product/:id': import(/* webpackChunkName: "product-detail-view" */ '../views/pages/product/detail.view')
     .then((view) => view.default),
