@@ -6,6 +6,8 @@ import 'lazysizes/plugins/parent-fit/ls.parent-fit';
 import '../styles/tailwind.css';
 import '../styles/main.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import 'slim-select/dist/slimselect.css';
+import 'file-upload-with-preview/dist/file-upload-with-preview.min.css';
 import 'notyf/notyf.min.css';
 
 import Alpine from 'alpinejs';
