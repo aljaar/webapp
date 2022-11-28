@@ -2,5 +2,5 @@
   "emmet.includeLanguages": {
     "javascript": "html"
   },
-  "editor.fontSize": 12
+  "editor.fontSize": 16
 }
