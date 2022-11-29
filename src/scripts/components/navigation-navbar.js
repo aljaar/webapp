@@ -1,32 +1,32 @@
-import UrlParser from "../utils/url.parser";
+import UrlParser from '../utils/url.parser';
 
 class NavigationNavbar extends HTMLElement {
-  constructor () {
+  constructor() {
     super();
 
     this.states = [
-      { id: 'home', route: '/', },
-      { id: 'maps', route: '/maps', },
-      { id: 'transaksi', route: '/transactions', },
-      { id: 'share', route: '/product', },
-      { id: 'profile', route: '/profile', },
-    ]
+      { id: 'home', route: '/' },
+      { id: 'maps', route: '/maps' },
+      { id: 'transaksi', route: '/transactions' },
+      { id: 'share', route: '/product' },
+      { id: 'profile', route: '/profile' },
+    ];
 
     this.render();
     this.afterRender();
   }
 
-  get activeState () {
+  get activeState() {
     const activeRoute = UrlParser.parseActiveUrlWithCombiner();
 
-    return this.states.find(item => item.route === activeRoute) ?? {
-      id: 'home', route: '/'
+    return this.states.find((item) => item.route === activeRoute) ?? {
+      id: 'home', route: '/',
     };
   }
 
-  onMenuItemClicked (element) {
-    const route = this.states.find(item => item.id === element.id.replace('navbar-', ''));
-    console.log(route)
+  onMenuItemClicked(element) {
+    const route = this.states.find((item) => item.id === element.id.replace('navbar-', ''));
+    console.log(route);
     if (!route) {
       window.location.href = '/#/';
     } else {
@@ -36,7 +36,7 @@ class NavigationNavbar extends HTMLElement {
     this.initializeActiveClassState();
   }
 
-  render () {
+  render() {
     this.innerHTML = String.raw`
       <div id="navbar-home" class="menu-item">
         <div class="menu-item--icon">
@@ -71,28 +71,28 @@ class NavigationNavbar extends HTMLElement {
     `;
   }
 
-  afterRender () {
+  afterRender() {
     const items = document.querySelectorAll('.menu-item');
 
-    items.forEach(item => {
+    items.forEach((item) => {
       item.addEventListener('click', () => {
         this.onMenuItemClicked(item);
-      })
+      });
     });
 
     this.initializeActiveClassState();
   }
 
-  initializeActiveClassState () {
+  initializeActiveClassState() {
     const items = document.querySelectorAll('.menu-item');
 
-    items.forEach(item => {
+    items.forEach((item) => {
       item.classList.remove('active');
 
       if (item.id.includes(this.activeState.id)) {
         item.classList.add('active');
       }
-    })
+    });
   }
 }
 
