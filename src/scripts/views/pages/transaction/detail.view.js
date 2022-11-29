@@ -1,9 +1,16 @@
-import { service } from "../../../sdk";
-import { format } from "../../../utils/date";
-import UrlParser from "../../../utils/url.parser";
+import { service } from '../../../sdk';
+import { format } from '../../../utils/date';
+import UrlParser from '../../../utils/url.parser';
+import { createPageHeader } from '../../templates/creator.template';
 
 class TransactionDetailView {
-  async render () {
+  renderHeader() {
+    return createPageHeader({
+      title: 'Detail Permintaan',
+    });
+  }
+
+  async render() {
     return String.raw`
       <div x-data="transaction" class="transaction-detail p-3 md:p-4">
         <template x-if="transaction">
@@ -52,44 +59,44 @@ class TransactionDetailView {
           </div>
         </template>
       </div>
-    `
+    `;
   }
 
-  async afterRender (alpine) {
+  async afterRender(alpine) {
     const { id } = UrlParser.parseActiveUrlWithoutCombiner();
 
     alpine.data('transaction', () => ({
       transaction: null,
       googleMapsLink: null,
-      async init () {
+      async init() {
         const { data: tx } = await service.transaction.detail(id);
 
         this.transaction = tx;
         this.getGoogleMapsLink();
       },
-      async getGoogleMapsLink () {
-        const location = service.user.me().profile.location;
-        const [ start, stop ] = await Promise.all([
+      async getGoogleMapsLink() {
+        const { location } = service.user.me().profile;
+        const [start, stop] = await Promise.all([
           service.helpers.getLocation(location),
           service.helpers.getLocation(this.transaction.products.drop_point),
-        ])
+        ]);
 
         const googleMaps = service.helpers.googleMaps({
-          start: [ start.lat, start.lon ], 
-          stop: [ stop.lat, stop.lon ]
+          start: [start.lat, start.lon],
+          stop: [stop.lat, stop.lon],
         });
-        
+
         this.googleMapsLink = googleMaps.link;
       },
-      useStatusClass (status) {
+      useStatusClass(status) {
         return {
           'bg-yellow-100 text-yellow-600': (status === 'waiting'),
           'bg-blue-100 text-blue-600': (status === 'approved'),
           'bg-red-100 text-red-600': (status === 'rejected'),
-          'bg-emerald-100 text-green-600': (status === 'success')
-        }
+          'bg-emerald-100 text-green-600': (status === 'success'),
+        };
       },
-      useLogStatusText (status) {
+      useLogStatusText(status) {
         switch (status) {
           case 'waiting':
             return 'Menunggu konfirmasi pemilik barang informasi lokasi penjemputan akan di informasikan setelah ini.';
@@ -100,12 +107,12 @@ class TransactionDetailView {
           case 'success':
             return 'Permintaan barang berhasil. Selesai.';
           default:
-            break;
+            return '-';
         }
       },
-      formatDate (date) {
+      formatDate(date) {
         return format(date);
-      }
+      },
     }));
   }
 }

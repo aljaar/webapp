@@ -1,8 +1,8 @@
-import { service } from "../../../sdk";
-import toastHelpers from "../../../utils/toast.helpers";
+import { service } from '../../../sdk';
+import toastHelpers from '../../../utils/toast.helpers';
 
 const SignInView = {
-  async render () {
+  async render() {
     return String.raw`
       <section x-data="signin" class="forms px-6 pt-4 space-y-4 text-center">
         <div class="space-y-4">
@@ -90,7 +90,7 @@ const SignInView = {
 
       },
     }));
-  }
-}
+  },
+};
 
 export default SignInView;
