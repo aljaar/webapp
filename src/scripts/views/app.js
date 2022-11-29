@@ -6,12 +6,15 @@ import routes from '../routes/routes';
 import { service } from '../sdk';
 import toastHelpers from '../utils/toast.helpers';
 import UrlParser from '../utils/url.parser';
+import { createHomeHeader } from './templates/creator.template';
 
 class App {
   constructor({
+    header,
     content,
     alpine,
   }) {
+    this._header = header;
     this._content = content;
     this._alpine = alpine;
 
@@ -35,9 +38,20 @@ class App {
 
     try {
       const page = await routes[url];
-      
+
       await this.beforeRenderPage(url);
       this._content.innerHTML = await page.render();
+
+      if (page.renderHeader) {
+        this._header.parentElement.classList.add('with-back');
+        this._header.innerHTML = page.renderHeader();
+      } else {
+        if (!this._header.parentElement.classList.contains('with-back') && url !== '/') {
+          this._header.parentElement.classList.add('with-back');
+        }
+
+        this._header.innerHTML = createHomeHeader();
+      }
 
       await page.afterRender(this._alpine);
     } catch (error) {
@@ -64,7 +78,8 @@ class App {
       if (!this._user) {
         this._user = await service.auth.user();
       }
-      console.info(`passed`)
+
+      console.info('passed');
     }
   }
 

@@ -15,6 +15,7 @@ import App from './views/app';
 window.Alpine = Alpine;
 
 const app = new App({
+  header: document.querySelector('#header-content'),
   content: document.querySelector('#main-content'),
   alpine: Alpine,
 });
