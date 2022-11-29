@@ -124,14 +124,12 @@ module.exports = merge(common, {
         /\.map$/,
         /\.LICENSE.txt$/,
       ],
-      runtimeCaching: [
-        
-      ],
+      runtimeCaching: [],
     }),
     new BundleAnalyzerPlugin({
-      analyzerMode: 'disabled',
-      generateStatsFile: true,
-      statsOptions: { source: false },
+      // analyzerMode: 'disabled',
+      // generateStatsFile: true,
+      // statsOptions: { source: false },
     }),
     new Critters(),
   ],
