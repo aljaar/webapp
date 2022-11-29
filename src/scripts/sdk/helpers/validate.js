@@ -1,6 +1,6 @@
 import joi from 'joi';
 
-const phoneValidation = /^(^\+62|62|^08)(\d{3,4}-?){2}\d{3,4}$/
+const phoneValidation = /^(^\+62|62|^08)(\d{3,4}-?){2}\d{3,4}$/;
 
 export const signUp = (data) => {
   const schema = joi.object({
@@ -11,17 +11,19 @@ export const signUp = (data) => {
   });
 
   return schema.validate(data);
-}
+};
 
 export const product = (data) => {
   const schema = joi.object().keys({
     title: joi.string().min(8).label('Title').required(),
     description: joi.string().label('Description').required(),
     category: joi.string().valid('food', 'non-food').label('Category').required(),
-    tags: joi.array().items(joi.number()).min(1).label('Tags').required(),
+    tags: joi.array().items(joi.number()).min(1).label('Tags')
+      .required(),
     drop_point: joi.array().items(joi.number()).label('Pick Up Point').required(),
     drop_time: joi.array().items(joi.string()).label('Pick Up Time').required(),
-    images: joi.array().items(joi.string()).min(1).label('Images').required(),
+    images: joi.array().items(joi.string()).min(1).label('Images')
+      .required(),
     used_since: joi.when('category', {
       is: joi.string().valid('non-food').required(),
       then: joi.string().label('Used Since').required(),
@@ -29,11 +31,11 @@ export const product = (data) => {
     expired_at: joi.when('category', {
       is: joi.string().valid('food').required(),
       then: joi.date().iso().label('Expired Date').required(),
-    })
+    }),
   });
 
   return schema.validate(data);
-}
+};
 
 export const editProduct = (data) => {
   const schema = joi.object().keys({
@@ -51,9 +53,8 @@ export const editProduct = (data) => {
     expired_at: joi.when('category', {
       is: joi.string().valid('food').required(),
       then: joi.date().iso().label('Expired Date').optional(),
-    })
+    }),
   });
 
   return schema.validate(data);
-}
-
+};
