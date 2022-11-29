@@ -1,8 +1,15 @@
 import Mapbox from 'mapbox-gl';
 import config from '../../config/app.config';
 import { service } from '../../sdk';
+import { createPageHeader } from '../templates/creator.template';
 
 class MapsView {
+  renderHeader() {
+    return createPageHeader({
+      title: 'Maps',
+    });
+  }
+
   async render() {
     return String.raw`
       <div x-data="maps" class="relative w-full h-full">
