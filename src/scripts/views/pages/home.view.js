@@ -1,4 +1,5 @@
-import { service } from "../../sdk";
+import { service } from '../../sdk';
+import { listsSkeletonLoading } from '../templates/creator.template';
 
 const HomeView = {
   async render() {
@@ -62,6 +63,10 @@ const HomeView = {
               </div>
             </div>
           </template>
+
+          <template x-if="isLoading">
+            ${listsSkeletonLoading()}
+          </template>
         </div>
 
         <div class="sheet-modal bg-white border-t p-4 border-t-gray-200 " x-bind:class="{'active': filter.open}">
@@ -112,18 +117,8 @@ const HomeView = {
     `;
   },
   async afterRender() {
-    const button = document.getElementById('login');
-
-    button.addEventListener('click', () => {
-      service.auth.signInWith({
-        type: 'email',
-        credential: {
-          email: 'nyanhashmail@gmail.com',
-          password: 'testpassword'
-        }
-      }).then(console.log)
-    })
-  }
-}
+    
+  },
+};
 
 export default HomeView;
