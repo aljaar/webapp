@@ -1,78 +1,88 @@
-import SlimSelect from 'slim-select';
-import fileUpload from 'file-upload-with-preview';
+import Choices from 'choices.js';
+import 'choices.js/public/assets/styles/choices.min.css';
+
+import { FileUploadWithPreview } from 'file-upload-with-preview/dist/file-upload-with-preview.esm';
+import { createPageHeader } from '../../templates/creator.template';
 
 class NewProductView {
+  renderHeader() {
+    return createPageHeader({
+      title: 'Item Baru',
+    });
+  }
+
   async render() {
     return String.raw`
       <div id="create-product" x-data="createProduct" class="p-4 flex flex-col gap-3">
-            
-      <div>
-          <label for="title" class="text-base text-emerald-600 mb-2">Title</label>
-          <input type="text" id="title" class="w-full p-2 border rounded-md focus:outline-none focus:ring-slate-900 focus:ring-1 focus:border-neutral-900">
-      </div>
-      <div>
-          <label for="description" class="text-base text-emerald-600 mb-2">Description</label>
-          <input type="text" id="description" class="w-full p-6 border rounded-md focus:outline-none focus:ring-slate-900 focus:ring-1 focus:border-neutral-900">
-      </div>
-      <div class="category mb-2">
+        <div>
+          <label for="title" class="form-control-label">Title</label>
+          <input type="text" id="title" class="form-control">
+        </div>
+        <div>
+          <label for="description" class="form-control-label">Description</label>
+          <input type="text" id="description" class="form-control">
+        </div>
+        <div class="category mb-2">
           <form action="">
-              <label><h2 class="text-emerald-600">Category</h2></label>
-              <div class="flex gap-5">
+            <label class="form-control-label">Kategori</label>
+            <div class="flex gap-5">
               <label for="food">
-                  <input type="radio" name="radio">
-                  <span>Food</span>
+                <input type="radio" name="radio">
+                <span>Food</span>
               </label>
               <label for="non-food">
-                  <input type="radio" name="radio">
-                 <span>Non Food</span>
+                <input type="radio" name="radio">
+                <span>Non Food</span>
               </label>
-              </div>
+            </div>
           </form>
-      </div>
-      <div class="mb-4  ">
-          <h2 class="text-emerald-600 ">Expired Date</h2>
-          <input type="date">
-      </div>
-      <div>
-          <label for="tags" class="text-base text-emerald-600 mb-3 pb-3">Tag</label>
-          
-          <select id="tags" multiple>
+        </div>
+        <div>
+          <h2 class="form-control-label">Expired Date</h2>
+          <input type="date" class="form-control">
+        </div>
+        <div>
+          <h2 class="form-control-label">Used Since</h2>
+          <input type="text" class="form-control" placeholder="Berapa lama barang dipakai atau kapan belinya">
+        </div>
+
+        <div>
+          <label for="tags" class="form-control-label">Tag</label>
+          <select id="tags" class="form-control" multiple>
             <option>Option 1</option>
             <option>Option 2</option>
             <option>Option 3</option>
           </select>
+        </div>
+        <div class="custom-file-container" data-upload-id="productImages">
+        </div>
+        <div>
+          <label for="" class="form-control-label">Titik Lokasi Penjemputan</label>
+          <div id="map" style="width: 400px; height: 128px;" class="mapboxgl-map"></div>
+        </div>
+        <div class="flex justify-center mb-6">
+          <button class="w-full font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-emerald-600 text-white hover:bg-emerald-700">Simpan</button>
+        </div>
       </div>
-      <div class="custom-file-container" data-upload-id="myFirstImage">
-      <div class="label-container">
-        <label>Upload</label>
-      </div>
-      <label class="input-container">
-        <input accept="*" aria-label="Choose File" class="input-hidden" id="file-upload-with-preview-myFirstImage" type="file">
-      </label>
-
-</div>
-      
-      <div>
-          <label for="" class="text-base text-emerald-600">Titik Penjemputan</label>
-          
-          <div id="map" style="width: 400px; height: 300px;" class="mapboxgl-map"></div>
-      </div>
-      
-      
-      <div class="flex justify-center">
-                <button class="mx-auto bg-centerborder p-3 bg-emerald-600 pt-3 hover:bg-emerald-700 rounded-full">
-                    <h1 class="mr-3 ml-3 text-white mx-auto">Submit</h1>
-                </button>
-              </div>
-  </div>
     `;
   }
 
   async afterRender(alpine) {
-    const upload = new FileUploadWithPreview('file-upload-with-preview-myFirstImage');
+    const upload = new FileUploadWithPreview('productImages', {
+      maxFileCount: 5,
+      multiple: true,
+      text: {
+        browse: 'Choose',
+        chooseFile: 'Take your pick...',
+        label: 'Choose Files to Upload',
+      },
+    });
 
-    new SlimSelect({
-      select: '#tags',
+    const choices = new Choices('#tags', {
+      removeItemButton: true,
+      classNames: {
+        containerInner: 'choices__inner form-control',
+      },
     });
 
     alpine.data('createProduct', () => ({
