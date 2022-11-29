@@ -1,10 +1,15 @@
-@import url('https://fontbit.io/css2?family=Open+Sans:wght@400;600;700&display=swap');
+@import url('https://fontbit.io/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
 
 body {
   background-color: #f7f7f7;
 }
-
-header .header-content {
+header {
+  @apply bg-emerald-400;
+}
+header.with-back {
+  @apply bg-gray-50 shadow-md;
+}
+header #header-content {
   max-width: 480px;
   width: 100%;
   display: flex;
@@ -15,7 +20,7 @@ header .header-content {
   margin: 0px auto;
   height: 60px;
 }
-header .header-logo {
+header:not(.with-back) .header-logo {
   width: auto;
   height: 33px;
   margin-right: 20px;
@@ -39,9 +44,36 @@ header .header-logo iconify-icon {
   height: calc(100vh - (70px + 60px));
   overflow-y: auto;
 }
+#main-content .choices__list--dropdown, .choices__list[aria-expanded] {
+  z-index: 6;
+}
 
 .shadow-mdl {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.form-control {
+  @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5;
+}
+.form-control-label {
+  @apply block mb-2 text-sm font-semibold text-green-900;
+}
+
+#main-content .custom-file-container label {
+  @apply block mb-2 text-sm font-semibold text-emerald-900;
+}
+
+#main-content .choices__inner {
+  @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2 pb-1;
+}
+#main-content .is-open .choices__inner {
+  @apply rounded-t-lg rounded-b-none;
+}
+#main-content .choices__list--multiple .choices__item {
+  @apply bg-emerald-50 text-emerald-700 border-emerald-700;
+}
+#main-content .choices[data-type*=select-multiple] .choices__button, .choices[data-type*=text] .choices__button {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21' height='21' viewBox='0 0 21 21'%3E%3Cg fill='%23047857' fill-rule='evenodd'%3E%3Cpath d='M2.592.044l18.364 18.364-2.548 2.548L.044 2.592z'/%3E%3Cpath d='M0 18.364L18.364 0l2.548 2.548L2.548 20.912z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .sheet-modal {
