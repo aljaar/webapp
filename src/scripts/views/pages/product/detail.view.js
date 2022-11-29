@@ -70,10 +70,12 @@ class ProductDetailView {
                 Buat Permintaan
               </button>
               <!-- Button Contact WA -->
-              <a x-bind:href="createWhatsappLink(product.profile)" target="_blank" class="w-full py-3 text-center text-sm text-white bg-emerald-600 bg rounded-md">
-                <iconify-icon icon="ri:whatsapp-line" inline></iconify-icon>
-                <span>Whatsapp</span>
-              </a>
+              <template x-if="product.profile.phone">
+                <a x-bind:href="createWhatsappLink(product.profile)" target="_blank" class="w-full py-3 text-center text-sm text-white bg-emerald-600 bg rounded-md">
+                  <iconify-icon icon="ri:whatsapp-line" inline></iconify-icon>
+                  <span>Whatsapp</span>
+                </a>
+              </template>
             </div>
           </div>
         </template>

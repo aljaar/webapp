@@ -1,4 +1,3 @@
-
 import { service } from '../../sdk';
 import { fromNow } from '../../utils/date';
 import UrlParser from '../../utils/url.parser';
@@ -53,8 +52,8 @@ export default () => ({
     return fromNow(date);
   },
   createWhatsappLink(profile) {
-    const message = `Hai, saya baru saja melihat barang **${this.product.title}** yang anda posting di Aljaar. Bisakah saya tanya sesuatu tentangnya? terima kasih sebelumnya.`
+    const message = `Hai, saya baru saja melihat barang **${this.product.title}** yang anda posting di Aljaar. Bisakah saya tanya sesuatu tentangnya? terima kasih sebelumnya.`;
 
-    return `https://wa.me/${profile.phone.replace('+', '')}?text=${encodeURIComponent(message)}`
-  }
+    return `https://wa.me/${profile.phone.replace('+', '')}?text=${encodeURIComponent(message)}`;
+  },
 });
