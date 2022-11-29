@@ -1,5 +1,13 @@
+import { createPageHeader, listsSkeletonLoading } from '../../templates/creator.template';
+
 class TransactionListsView {
-  async render () {
+  renderHeader() {
+    return createPageHeader({
+      title: 'Daftar Permintaan',
+    });
+  }
+
+  async render() {
     return String.raw`
       <div x-data="transactions" class="transactions">
         <div class="p-3 flex flex-col gap-3">
@@ -33,12 +41,16 @@ class TransactionListsView {
               </div> -->
             </a>
           </template>
+
+          <template x-if="isLoading">
+            ${listsSkeletonLoading()}
+          </template>
         </div>
       </div>
-    `
+    `;
   }
 
-  async afterRender () {
+  async afterRender() {
 
   }
 }
