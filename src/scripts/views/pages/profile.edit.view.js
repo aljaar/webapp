@@ -1,53 +1,54 @@
+import { createPageHeader } from '../templates/creator.template';
+
 class ProfileEditView {
+  renderHeader() {
+    return createPageHeader({
+      title: 'Edit Profile',
+    });
+  }
+
   async render() {
     return String.raw`
-      <!-- <h1>Profile Edit</h1> -->
-        <div>
-          <div class="p-3  top-48">
-              <div class="foto pb-3">
-                <img src="https://iifjmhhbusjlypxbpniy.supabase.co/storage/v1/object/public/avatars/public/avatar.default.webp" class="mx-auto w-24 rounded-full" alt="Profile Picture">
-              </div>
-              <div class="text-xs mx-auto pb-9 text-center">
-                <a href="" class="mx-auto text-center left-50">Change Photo</a>
-              </div>
+      <div x-data="profileEdit" class="p-3 top-48">
+        <div class="flex flex-col justify-center items-center mb-4">
+          <div class="relative mb-2">
+            <img src="https://iifjmhhbusjlypxbpniy.supabase.co/storage/v1/object/public/avatars/public/avatar.default.webp" class="w-24 rounded-full" alt="Profile Picture">
 
-              <div class="flex flex-col gap-3">
-              <div>
-                <label for="full-name" class="text-base text-emerald-600 mb-2">Full Name</label>
-                <input type="text" id="full-name"
-                      class="w-full p-2 border rounded-md focus:outline-none focus:ring-slate-900 focus:ring-1 focus:border-neutral-900">
-              </div>
-              <div>
-                <label for="about" class="text-base text-emerald-600 mb-2">About</label>
-                <input type="text" id="about"
-                      class="w-full p-6 border rounded-md focus:outline-none focus:ring-slate-900 focus:ring-1 focus:border-neutral-900">
-              </div>
-
-              <div>
-                  <label for="email" class="text-base text-emerald-600">Email</label>
-                  <input type="text" id="tag"
-                      class="w-full p-2 border rounded-md focus:outline-none focus:ring-slate-900 focus:ring-1 focus:border-neutral-900">
-              </div>
-              <div>
-                  <label for="phone" class="text-base text-emerald-600">Phone</label>
-                  <input type="text" id="tag"
-                      class="w-full p-2 border rounded-md focus:outline-none focus:ring-slate-900 focus:ring-1 focus:border-neutral-900">
-              </div>
-
-              <br>
-              <div class="flex justify-center">
-                <button class="mx-auto bg-centerborder p-3 bg-emerald-600 pt-3 hover:bg-emerald-700 rounded-full">
-                    <h1 class="mr-3 ml-3 text-white mx-auto">Save Changes</h1>
-                </button>
-              </div>
-              </div>
-              
+            <button @click="changeAvatar" class="absolute bottom-1 right-1 shadow-mdl w-6 h-6 bg-white rounded-full">
+              <iconify-icon icon="ri:camera-switch-line" class="text-[14px]" inline></iconify-icon>
+            </button>
           </div>
         </div>
-    `
+
+        <div class="flex flex-col gap-3">
+          <div>
+            <label for="full-name" class="form-control-label">Full Name</label>
+            <input type="text" id="full-name" class="form-control">
+          </div>
+          <div>
+            <label for="about" class="form-control-label">About</label>
+            <input type="text" id="about" class="form-control">
+          </div>
+          <div>
+            <label for="email" class="form-control-label">Email</label>
+            <input type="text" id="tag" class="form-control">
+          </div>
+          <div>
+            <label for="phone" class="form-control-label">Phone</label>
+            <input type="text" id="tag" class="form-control">
+          </div>
+          <div class="flex justify-center my-6">
+            <button class="w-full font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-emerald-600 text-white hover:bg-emerald-700">Simpan Perubahan</button>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   async afterRender(alpine) {
+    alpine.data('profileEdit', () => ({
+
+    }));
   }
 }
 
