@@ -7,6 +7,7 @@ export const signUp = (data) => {
     full_name: joi.string().required(),
     email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
     password: joi.string().min(8).alphanum().required(),
+    repeat_password: joi.ref('password'),
     phone: joi.string().regex(phoneValidation).required(),
   });
 
