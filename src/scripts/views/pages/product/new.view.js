@@ -47,13 +47,26 @@ class NewProductView {
         </div>
 
         <div>
-          <label for="tags" class="form-control-label">Tag</label>
-          <select id="tags" class="form-control" multiple>
-            <option>Option 1</option>
-            <option>Option 2</option>
-            <option>Option 3</option>
-          </select>
+          <div class="flex items-end justify-between">
+            <label class="form-control-label" style="margin-bottom:0;">Waktu Ambil</label>
+            <button @click="data.drop_time.push('')" class="add rounded-md border bg-pink-50 text-pink-600 border-pink-600 py-1 px-3 text-sm">
+              Add
+            </button>
+          </div>
+
+          <div class="flex flex-col space-y-2">
+            <template x-for="(time, index) in data.drop_time">
+              <div class="relative">
+                <input type="text" class="form-control pr-8" placeholder="08:00-10:00" x-model="data.drop_time[index]">
+
+                <button x-show="data.drop_time.length > 1" class="absolute right-3 top-2 text-red-500" @click="data.drop_time.splice(index, 1)">
+                  <iconify-icon icon="mdi:trash-can-outline" inline></iconify-icon>
+                </button>
+              </div>
+            </template>
+          </div>
         </div>
+
         <div class="custom-file-container" data-upload-id="productImages">
         </div>
         <div>
