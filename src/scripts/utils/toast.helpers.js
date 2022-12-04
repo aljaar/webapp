@@ -1,4 +1,5 @@
 import { Notyf } from 'notyf';
+import { delay } from './helpers';
 
 class ToastHelpers {
   constructor() {
@@ -6,12 +7,19 @@ class ToastHelpers {
       duration: 3000,
       position: {
         x: 'center',
-        y: 'bottom',
+        y: 'top',
       },
       types: [
         {
           type: 'info',
           background: '#0da8ee',
+        },
+        {
+          type: 'loading',
+          className: 'notyf-loading',
+          icon: String.raw`
+            <iconify-icon icon="eos-icons:loading" inline></iconify-icon>
+          `,
         },
       ],
     });
