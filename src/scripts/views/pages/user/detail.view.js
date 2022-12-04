@@ -1,11 +1,11 @@
 class UserDetailView {
-  async render () {
+  async render() {
     return String.raw`
       <h1>User Detail</h1>
-    `
+    `;
   }
 
-  async afterRender () {
+  async afterRender() {
 
   }
 }

@@ -1,8 +1,9 @@
 import { v4 as uuid } from 'uuid';
 import {
-  emitter, wrapper, useProduct, useGeoJson, useGoogleMaps, geographyToCoordinates,
+  emitter, wrapper, useProduct, useGeoJson, useGoogleMaps, geographyToCoordinates, coordinateEncoder,
 } from './helpers/wrapper';
 import * as validator from './helpers/validate';
+import { service } from '.';
 
 function Aljaar({ supabase }) {
   const states = {
@@ -31,8 +32,7 @@ function Aljaar({ supabase }) {
     states.auth_state = event;
 
     if (session) {
-      states.session = session;
-      states.user = session.user;
+      console.info('Session Refreshed');
     } else {
       states.session = null;
       states.user = null;
@@ -42,6 +42,8 @@ function Aljaar({ supabase }) {
       case 'SIGNED_IN':
       case 'TOKEN_REFRESHED':
         emitter.emit('aljaar:auth:login', { event, session });
+        states.session = session;
+        // states.user = session.user;
 
         if (event === 'TOKEN_REFRESHED') {
           emitter.emit('aljaar:auth:refreshed', { event, session });
@@ -56,18 +58,28 @@ function Aljaar({ supabase }) {
     }
   });
 
+  window.supabase = supabase;
+
   return {
     emitter,
     raw: supabase,
+    permission: new Map(),
     auth: {
       async session() {
         return wrapper(() => supabase.auth.getSession());
       },
       async user() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { session: { user } } } = await supabase.auth.getSession();
         const { data: profile } = await supabase.from('profiles').select().eq('user_id', user.id).single();
 
         user.profile = profile;
+
+        if (profile.location) {
+          user.location = await geographyToCoordinates(supabase, profile.location);
+        } else {
+          user.location = false;
+        }
+
         states.user = user;
 
         return user;
@@ -121,7 +133,7 @@ function Aljaar({ supabase }) {
           password,
         }));
       },
-      updateLocation() {
+      updateWithCurrentLocation() {
         return new Promise((resolve) => {
           if (!navigator.geolocation) {
             resolve({ data: null, error: { message: "Can't get user current location" } });
@@ -147,8 +159,42 @@ function Aljaar({ supabase }) {
       me() {
         return states.user;
       },
-      update(data) {
+      async update(data) {
+        const { full_name: fullName, phone, description } = states.user.profile;
+        const update = {};
 
+        if (data.full_name !== fullName) {
+          update.full_name = data.full_name;
+        }
+        if (data.phone !== phone) {
+          update.phone = data.phone;
+        }
+        if (data.description !== description) {
+          update.description = data.description;
+        }
+
+        if (data.avatar) {
+          const ext = data.avatar.name.split('.').pop();
+          const filename = `${uuid()}.${ext}`;
+
+          const { data: avatar } = await wrapper(() => supabase.storage
+            .from('avatars')
+            .upload(`${states.user.id}/${filename}`, data.avatar));
+
+          const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(avatar.path);
+
+          update.avatar_url = publicUrl;
+        }
+
+        return wrapper(() => supabase.from('profiles')
+          .update(update)
+          .eq('user_id', states.user.id));
+      },
+      getHelpedPeopleCount() {
+        return wrapper(() => supabase.from('transactions')
+          .select('*', { count: 'exact', head: true })
+          .eq('owner_id', states.user.id)
+          .eq('status', 'approved'));
       },
       async getNeighborCount() {
         return wrapper(() => supabase.rpc('get_neighbor_count', {
@@ -174,6 +220,20 @@ function Aljaar({ supabase }) {
 
         return stats[0];
       },
+      updateLocation(position) {
+        return wrapper(() => supabase.from('profiles').update({
+          location: `SRID=4326;POINT(${position.lng} ${position.lat})`,
+        }).eq('user_id', states.user.id));
+      },
+      async getAddress() {
+        const { result: { address } } = await coordinateEncoder([
+          states.user.location.lat,
+          states.user.location.lon,
+        ]);
+        states.user.locationAddress = address;
+
+        return address;
+      },
     },
     product: {
       async detail(id) {
@@ -190,20 +250,22 @@ function Aljaar({ supabase }) {
         const isOwner = (product.user_id === states.user.id);
         const transactionRPC = isOwner ? 'get_transactions' : 'count_transactions';
 
-        const { data: transaction } = await wrapper(() => supabase.rpc(transactionRPC, {
-          p_id: id,
-        }));
-        const { data: profile } = await wrapper(() => supabase
-          .from('profiles')
-          .select('full_name, avatar_url, phone, rating')
-          .eq('user_id', product.user_id));
+        const [transaction, profile] = await Promise.all([
+          wrapper(() => supabase.rpc(transactionRPC, {
+            p_id: id,
+          })),
+          wrapper(() => supabase
+            .from('profiles')
+            .select('full_name, avatar_url, phone, rating')
+            .eq('user_id', product.user_id)),
+        ]);
 
-        product.profile = profile;
-        product.transaction = transaction;
+        product.profile = profile.data;
+        product.transaction = transaction.data;
 
-        await supabase.rpc('increment_view', {
+        supabase.rpc('increment_view', {
           p_id: id,
-        });
+        }).then(console.info);
 
         return useProduct(product).format(usePublicUrl);
       },
@@ -218,6 +280,7 @@ function Aljaar({ supabase }) {
         return products;
       },
       async create({ data, images }) {
+        console.log(data);
         // Image Upload
         const uploadTasks = images.map(async (image) => {
           const ext = image.name.split('.').pop();
@@ -232,10 +295,9 @@ function Aljaar({ supabase }) {
 
         const results = await Promise.all(uploadTasks);
         // const results = [{
-        //  path: '87789b6c-b404-4c96-8abc-3ec09e7f5ff9/7dde18ab-36c8-4a41-a49e-6d04a637dd7e.png'
+        //   path: '09a93ad3-1313-4198-a0dd-3082a68f9fd8/96c85c42-682f-477c-85ad-b1bcd1329969.jpeg',
         // }];
         const uploadedImages = results.map((image) => image.path);
-
         const [lat, lon] = data.drop_point;
 
         const unvalidatedProduct = {
@@ -362,8 +424,6 @@ function Aljaar({ supabase }) {
             return states.tags;
           },
           search(query) {
-            console.log(states.tags);
-
             return states.tags.filter((item) => (item.name.toLowerCase()
               .includes(query.toLowerCase())));
           },
@@ -388,6 +448,12 @@ function Aljaar({ supabase }) {
             user: users.find((user) => user.user_id === tx.user_id),
           })),
         };
+      },
+      async waitingCount() {
+        return wrapper(() => supabase.from('transactions')
+          .select('*', { count: 'exact', head: false })
+          .eq('owner_id', states.user.id)
+          .eq('status', 'waiting'));
       },
       // List of approved transactions and ready to pickup and need some review
       needReviews() {

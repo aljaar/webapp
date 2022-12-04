@@ -1,9 +1,10 @@
 import product from '../components/alpine/product';
 import products from '../components/alpine/products';
-import transactions from '../components/alpine/transactions';
 import NavigationNavbar from '../components/navigation-navbar';
 import routes from '../routes/routes';
 import { service } from '../sdk';
+import { delay } from '../utils/helpers';
+import LoadingIndicator from '../utils/loading';
 import toastHelpers from '../utils/toast.helpers';
 import UrlParser from '../utils/url.parser';
 import { createHomeHeader } from './templates/creator.template';
@@ -75,10 +76,6 @@ class App {
 
       await page.afterRender(this._alpine);
     } catch (error) {
-      if (error.message === 'unauthorized') {
-        console.info('Redirect ke halaman login');
-      }
-
       console.error(error);
 
       this._content.innerHTML = this._renderErrorNotFound();
@@ -91,12 +88,20 @@ class App {
     if (!session) {
       if (!url.includes('/sign')) {
         toastHelpers.error('You need to login first');
+        window.location.href = '/#/signin';
+        throw new Error('unauthorized');
+      }
+    } else {
+      if (localStorage.getItem('registered_user')) {
+        localStorage.removeItem('registered_user');
       }
 
-      window.location.href = '/#/signin';
-    } else {
       if (!this._user) {
+        const loading = new LoadingIndicator();
+
+        loading.start();
         this._user = await service.auth.user();
+        loading.stop();
       }
 
       console.info('passed');

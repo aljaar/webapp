@@ -4,7 +4,7 @@ body {
   background-color: #f7f7f7;
 }
 header {
-  @apply bg-emerald-400;
+  @apply bg-green-600;
 }
 header.with-back {
   @apply bg-gray-50 shadow-md;
@@ -23,7 +23,6 @@ header #header-content {
 header:not(.with-back) .header-logo {
   width: auto;
   height: 33px;
-  margin-right: 20px;
 }
 header .header-logo iconify-icon {
   margin-left: 1rem;
@@ -47,6 +46,9 @@ header .header-logo iconify-icon {
 #main-content .choices__list--dropdown, .choices__list[aria-expanded] {
   z-index: 6;
 }
+#main-content .custom-file-container .image-preview {
+  height: 116px;
+}
 
 .shadow-mdl {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
@@ -55,8 +57,14 @@ header .header-logo iconify-icon {
 .form-control {
   @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5;
 }
+.form-control:disabled {
+  @apply bg-gray-200 text-gray-600;
+}
 .form-control-label {
   @apply block mb-2 text-sm font-semibold text-green-900;
+}
+.notyf .notyf-loading {
+  @apply rounded-md border bg-green-100 sm:border-green-600 text-green-800;
 }
 
 #main-content .custom-file-container label {
@@ -77,9 +85,9 @@ header .header-logo iconify-icon {
 }
 
 .sheet-modal {
-  position: sticky;
+  position: absolute;
   left: 0;
-  bottom: 0;
+  bottom: 70px;
   width: 100%;
   height: 200px;
   display: none;
@@ -89,6 +97,7 @@ header .header-logo iconify-icon {
   transform: translate3d(0, 100%, 0);
   z-index: 2;
   will-change: transform,opacity;
+  @apply rounded-t-lg;
 }
 .sheet-modal.active {
   display: block;
@@ -128,7 +137,7 @@ navigation-navbar {
 navigation-navbar .menu-item {
   display: inline-block;
   width: calc(20% - 6px);
-  font-size: 10px;
+  font-size: 11px;
   cursor: pointer;
 }
 navigation-navbar .menu-item .menu-item--icon {

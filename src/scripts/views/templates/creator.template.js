@@ -20,6 +20,43 @@ export const createPageHeader = ({ title, menu, withBack = true }) => String.raw
   </div>
   ` : ''}
 `;
+
+export const createProduct = () => String.raw`
+  <div class="flex items-center pt-2 pb-1 gap-4">
+    <div class="">
+      <img class="lazypreload lazyload w-32 h-24 object-cover rounded bg-green-50 border border-green-600" src="images/loading.gif" x-bind:data-src="image(item.image)" x-bind:alt="item.title">
+    </div>
+    <div class="h-24 flex flex-col flex-1 justify-between">
+      <a x-bind:href="'/#/product/' + item.product_id">
+        <h3 x-text="item.title" class="font-semibold"></h3>
+      </a>
+      <div class="flex gap-2 text-xs items-center">
+        <img x-bind:data-src="item.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload rounded-full w-4" alt="">
+        <span class="font-medium" x-text="item.profile.full_name"></span>
+      </div>
+      <div class="flex gap-2 text-gray-700">
+        <div class="flex gap-2 text-xs items-center">
+          <iconify-icon icon="ri:map-pin-2-line"></iconify-icon>
+          <span title="Jarak" x-text="(item.distance).toFixed(2) + 'm'"></span>
+        </div>
+        <span>·</span>
+        <div class="flex gap-2 text-xs items-center">
+          <iconify-icon icon="ri:eye-line"></iconify-icon>
+          <span title="View" x-text="item.view">0</span>
+        </div>
+        <span>·</span>
+        <div class="flex gap-2 text-xs items-center">
+          <iconify-icon icon="fluent-mdl2:quantity"></iconify-icon>
+          <span title="QTY" x-text="item.qty">0</span>
+        </div>
+      </div>
+    </div>
+    <a x-bind:href="'/#/product/' + item.product_id" class="flex items-center justify-center rounded-full hover:bg-gray-100 w-12 h-12">
+      <iconify-icon icon="heroicons-outline:arrow-right" inline></iconify-icon>
+    </a>
+  </div>
+`;
+
 export const createLoadingOverlay = () => String.raw`
   <div id="overlay-loading" class="bg-black/50 fixed top-0 left-0 z-10 w-full h-full">
     <div class="left-1/2 top-1/2 absolute overflow-y-auto transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md text-center" style="padding: 20px; max-width: 480px;">
@@ -67,5 +104,24 @@ export const listsSkeletonLoading = () => String.raw`
       <div class="h-2.5 bg-gray-300 rounded-full w-12"></div>
     </div>
     <span class="sr-only">Loading...</span>
+  </div>
+`;
+
+export const createEmptyListTemplate = () => String.raw`
+  <div class="w-full">
+    <div class="flex flex-col items-center space-y-3 mx-auto text-center">
+      <img src="images/empty.webp" class="w-64" alt="Empty Lists">
+      <p>Whops, sepertinya belum ada data yang bisa ditampilkan.</p>
+      <button @click="loadTransactions" class="text-sm py-2 px-4 rounded-md bg-pink-50 text-pink-600 border border-pink-600">Muat Ulang</button>
+    </div>
+  </div>
+`;
+export const createEmptyResultTemplate = (error = '') => String.raw`
+  <div class="w-full">
+    <div class="flex flex-col items-center space-y-3 mx-auto text-center">
+      <img src="images/empty.webp" class="w-64" alt="Empty Lists">
+      <p>Whops, data gagal dimuat.</p>
+      ${(error) ? `<b>Kode : ${error}</b>` : ''}
+    </div>
   </div>
 `;
