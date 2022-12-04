@@ -6,6 +6,7 @@ specifiers:
   '@codeceptjs/configure': ^0.10.0
   '@supabase/supabase-js': ^2.1.1
   '@turf/center': ^6.5.0
+  '@turf/circle': ^6.5.0
   '@turf/helpers': ^6.5.0
   alpinejs: ^3.10.5
   autoprefixer: ^10.4.12
@@ -69,6 +70,7 @@ specifiers:
 dependencies:
   '@supabase/supabase-js': 2.1.1
   '@turf/center': 6.5.0
+  '@turf/circle': 6.5.0
   '@turf/helpers': 6.5.0
   alpinejs: 3.10.5
   choices.js: 10.1.0
@@ -2158,8 +2160,28 @@ packages:
       '@turf/helpers': 6.5.0
     dev: false
 
+  /@turf/circle/6.5.0:
+    resolution: {integrity: sha512-oU1+Kq9DgRnoSbWFHKnnUdTmtcRUMmHoV9DjTXu9vOLNV5OWtAAh1VZ+mzsioGGzoDNT/V5igbFOkMfBQc0B6A==}
+    dependencies:
+      '@turf/destination': 6.5.0
+      '@turf/helpers': 6.5.0
+    dev: false
+
+  /@turf/destination/6.5.0:
+    resolution: {integrity: sha512-4cnWQlNC8d1tItOz9B4pmJdWpXqS0vEvv65bI/Pj/genJnsL7evI0/Xw42RvEGROS481MPiU80xzvwxEvhQiMQ==}
+    dependencies:
+      '@turf/helpers': 6.5.0
+      '@turf/invariant': 6.5.0
+    dev: false
+
   /@turf/helpers/6.5.0:
     resolution: {integrity: sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw==}
+    dev: false
+
+  /@turf/invariant/6.5.0:
+    resolution: {integrity: sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg==}
+    dependencies:
+      '@turf/helpers': 6.5.0
     dev: false
 
   /@turf/meta/6.5.0:

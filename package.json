@@ -4,8 +4,8 @@
   "description": "Aljaar Front End Apps",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint src/**/*.js",
-    "lint:fix": "eslint src/**/*.js --fix",
+    "lint": "eslint --ext .js src",
+    "lint:fix": "eslint --ext .js src --fix",
     "start-dev": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
     "build-image": "node commands/image-resize.js",
@@ -69,6 +69,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.1.1",
     "@turf/center": "^6.5.0",
+    "@turf/circle": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "alpinejs": "^3.10.5",
     "choices.js": "^10.1.0",
