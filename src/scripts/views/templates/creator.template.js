@@ -1,7 +1,10 @@
 export const createHomeHeader = () => String.raw`
-  <a href="" class="header-logo">
-    <iconify-icon class="p-2 bg-white text-emerald-600 rounded-full text-xl" icon="mdi:home-group"></iconify-icon>
-  </a>
+  <div class="flex items-center gap-4">
+    <a href="" class="header-logo">
+      <img src="leaf-white.png" class="w-9 ml-4 rounded-full alt="">
+    </a>
+    <h1 class="text-xl font-semibold text-white">Aljaar</h1>  
+  </div>
 `;
 
 export const createPageHeader = ({ title }) => String.raw`
