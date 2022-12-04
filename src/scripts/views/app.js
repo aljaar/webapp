@@ -20,6 +20,7 @@ class App {
 
     this._initialCustomElement();
     this._initialAlpine();
+    this._initialListener();
   }
 
   _initialAlpine() {
@@ -31,6 +32,12 @@ class App {
 
   _initialCustomElement() {
     customElements.define('navigation-navbar', NavigationNavbar);
+  }
+
+  _initialListener() {
+    service.emitter.on('aljaar:auth:refreshed', () => {
+      service.auth.user().then(() => 'User Data Refreshed');
+    });
   }
 
   async renderPage() {
