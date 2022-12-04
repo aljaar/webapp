@@ -43,6 +43,23 @@ class ToastHelpers {
       this.errorDetail = null;
     }
   }
+
+  loading(message = 'Harap tunggu...') {
+    return this.notyf.open({
+      type: 'loading',
+      message,
+      duration: 0,
+    });
+  }
+
+  async dismiss(item) {
+    await delay(300);
+    this.notyf.dismiss(item);
+  }
+
+  dismissAll() {
+    this.notyf.dismissAll();
+  }
 }
 
 export default new ToastHelpers();
