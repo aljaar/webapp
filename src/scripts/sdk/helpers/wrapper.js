@@ -94,3 +94,10 @@ export const geographyToCoordinates = async (supabase, geography) => {
 
   return coordinates;
 };
+
+export const coordinateEncoder = async ([lat, lng]) => {
+  const response = await fetch(`https://geocoding.nyandev.workers.dev/?latlon=${lat},${lng}`);
+  const data = await response.json();
+
+  return data;
+}
