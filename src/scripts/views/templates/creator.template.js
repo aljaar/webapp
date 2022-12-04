@@ -14,6 +14,13 @@ export const createPageHeader = ({ title }) => String.raw`
     </button>
     <h1 class="text-xl font-semibold">${title}</h1>  
   </div>
+export const createLoadingOverlay = () => String.raw`
+  <div id="overlay-loading" class="bg-black/50 fixed top-0 left-0 z-10 w-full h-full">
+    <div class="left-1/2 top-1/2 absolute overflow-y-auto transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md text-center" style="padding: 20px; max-width: 480px;">
+      <iconify-icon class="text-2xl m-auto" icon="eos-icons:loading"></iconify-icon>
+      <p class="mt-2 text-sm">Mohon tunggu...</p>
+    </div>
+  </div>
 `;
 
 export const listsSkeletonLoading = () => String.raw`
