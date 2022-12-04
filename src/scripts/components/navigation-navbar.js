@@ -40,13 +40,13 @@ class NavigationNavbar extends HTMLElement {
     this.innerHTML = String.raw`
       <div id="navbar-home" class="menu-item">
         <div class="menu-item--icon">
-          <iconify-icon icon="ri:home-4-line"></iconify-icon>
+          <iconify-icon icon="ic:baseline-home"></iconify-icon>
         </div>
         <span class="menu-item--text inline-block">Home</span>
       </div>
       <div id="navbar-maps" class="menu-item">
         <div class="menu-item--icon">
-          <iconify-icon icon="ri:road-map-line"></iconify-icon>
+          <iconify-icon icon="mdi:map-search"></iconify-icon>
         </div>
         <span class="menu-item--text inline-block">Maps</span>
       </div>
@@ -64,7 +64,7 @@ class NavigationNavbar extends HTMLElement {
       </div>
       <div id="navbar-profile" class="menu-item">
         <div class="menu-item--icon">
-          <iconify-icon icon="ri:user-line"></iconify-icon>
+          <iconify-icon icon="mdi:account"></iconify-icon>
         </div>
         <span class="menu-item--text inline-block">Profile</span>
       </div>
