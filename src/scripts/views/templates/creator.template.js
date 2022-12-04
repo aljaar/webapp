@@ -7,13 +7,19 @@ export const createHomeHeader = () => String.raw`
   </div>
 `;
 
-export const createPageHeader = ({ title }) => String.raw`
+export const createPageHeader = ({ title, menu, withBack = true }) => String.raw`
   <div x-data="{}" class="flex items-center gap-4">
-    <button @click="() => history.back()" class="header-logo">
+    <button x-show="${withBack}" @click="() => history.back()" class="header-logo">
       <iconify-icon class="text-xl" icon="ri:arrow-left-line" inline></iconify-icon>
     </button>
     <h1 class="text-xl font-semibold">${title}</h1>  
   </div>
+  ${(menu) ? String.raw`
+  <div class="flex gap-4 mr-4" x-data="navbarMenu">
+    ${menu.join('')}
+  </div>
+  ` : ''}
+`;
 export const createLoadingOverlay = () => String.raw`
   <div id="overlay-loading" class="bg-black/50 fixed top-0 left-0 z-10 w-full h-full">
     <div class="left-1/2 top-1/2 absolute overflow-y-auto transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md text-center" style="padding: 20px; max-width: 480px;">

@@ -26,7 +26,18 @@ class App {
   _initialAlpine() {
     this._alpine.data('product', product);
     this._alpine.data('products', products);
-    this._alpine.data('transactions', transactions);
+    this._alpine.data('navbarMenu', () => ({
+      async logout() {
+        const loading = toastHelpers.loading();
+        await service.auth.signOut();
+
+        toastHelpers.success('Logout berhasil');
+        await delay(500);
+        toastHelpers.dismiss(loading);
+        window.location.href = '/#/';
+      },
+    }));
+
     this._alpine.start();
   }
 
@@ -55,6 +66,8 @@ class App {
       } else {
         if (!this._header.parentElement.classList.contains('with-back') && url !== '/') {
           this._header.parentElement.classList.add('with-back');
+        } else if (this._header.parentElement.classList.contains('with-back') && url === '/') {
+          this._header.parentElement.classList.remove('with-back');
         }
 
         this._header.innerHTML = createHomeHeader();
