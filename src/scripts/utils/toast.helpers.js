@@ -1,7 +1,7 @@
 import { Notyf } from 'notyf';
 import { delay } from './helpers';
 
-class ToastHelpers {
+class Toast {
   constructor() {
     this.notyf = new Notyf({
       duration: 3000,
@@ -13,6 +13,13 @@ class ToastHelpers {
         {
           type: 'info',
           background: '#0da8ee',
+        },
+        {
+          type: 'cofirm',
+          className: 'notyf-loading',
+          icon: String.raw`
+            <iconify-icon icon="ri:question-line" inline></iconify-icon>
+          `,
         },
         {
           type: 'loading',
@@ -52,6 +59,15 @@ class ToastHelpers {
     }
   }
 
+  confirm(message) {
+    return this.notyf.open({
+      type: 'cofirm',
+      message,
+      duration: 5000,
+      dismissible: true,
+    });
+  }
+
   loading(message = 'Harap tunggu...') {
     return this.notyf.open({
       type: 'loading',
@@ -70,4 +86,4 @@ class ToastHelpers {
   }
 }
 
-export default new ToastHelpers();
+export default new Toast();
