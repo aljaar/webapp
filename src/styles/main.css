@@ -4,10 +4,10 @@ body {
   background-color: #f7f7f7;
 }
 header {
-  @apply bg-green-600;
+  @apply bg-green-600 shadow-md;
 }
 header.with-back {
-  @apply bg-gray-50 shadow-md;
+  @apply bg-gray-50;
 }
 header #header-content {
   max-width: 480px;
