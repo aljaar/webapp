@@ -9,6 +9,14 @@ class ProductDetailView {
   renderHeader() {
     return createPageHeader({
       title: 'Detail Item',
+      menu: [
+        String.raw`
+          <a id="edit-product" class="hidden cursor-pointer font-medium px-3 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
+            <iconify-icon icon="mdi:file-edit-outline" inline></iconify-icon>
+            Ubah
+          </a>
+        `,
+      ],
     });
   }
 
@@ -48,7 +56,7 @@ class ProductDetailView {
               </div>
             </div>
             <!-- Judul -->
-            <h3 x-text="product.title" class="text-2xl font-semibold"></h3>
+            <h3 x-text="createTitle(product.title)" class="text-2xl font-semibold"></h3>
             <!-- Tanggal -->
             <span class="text-sm text-gray-500">
               <iconify-icon icon="ri:time-line" inline></iconify-icon>
@@ -88,31 +96,60 @@ class ProductDetailView {
                 <h4 class="text-emerald-600 font-medium">Waktu Ambil</h4>
                 <span x-text="product.drop_time.join(', ')"></span>
               </div>
+              <template x-if="(isOwner)">
+                <div class="pt-2 flex justify-between">
+                  <h4 class="text-emerald-600 font-medium">Telah dibagikan</h4>
+                  <span><b x-text="product.transaction.length"></b> orang</span>
+                </div>
+              </template>
               <div></div>
             </div>
 
-            <!-- User (Avatar Nama) -->
-            <div class="flex items-center gap-2 my-4">
-              <img x-bind:data-src="product.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload w-8 h-8 rounded-full" alt="">
-              <div class="flex flex-col flex-1">
-                <span x-text="product.profile.full_name"></span>
+            <template x-if="!isOwner">
+              <!-- User (Avatar Nama) -->
+              <div class="flex items-center gap-2 my-4">
+                <img x-bind:data-src="product.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload w-8 h-8 rounded-full" alt="">
+                <div class="flex flex-col flex-1">
+                  <span x-text="product.profile.full_name"></span>
+                </div>
+
+                <!-- Button Contact WA -->
+                <template x-if="product.profile.phone">
+                  <a x-bind:href="createWhatsappLink(product.profile)" target="_blank" class="py-2 px-4 text-sm text-white bg-emerald-600 bg rounded-md shadow">
+                    <iconify-icon icon="ri:whatsapp-line" inline></iconify-icon>
+                    <span>Whatsapp</span>
+                  </a>
+                </template>
               </div>
 
-              <!-- Button Contact WA -->
-              <template x-if="product.profile.phone">
-                <a x-bind:href="createWhatsappLink(product.profile)" target="_blank" class="py-2 px-4 text-sm text-white bg-emerald-600 bg rounded-md shadow">
-                  <iconify-icon icon="ri:whatsapp-line" inline></iconify-icon>
-                  <span>Whatsapp</span>
-                </a>
-              </template>
-            </div>
+              <div class="flex gap-3">
+                <!-- Button Request -->
+                <button @click="createRequest" x-show="product.qty > 0" class="w-full py-3 text-white bg-emerald-600 rounded-md shadow">
+                  Buat Permintaan
+                </button>
+              </div>
+            </template>
 
-            <div class="flex gap-3">
-              <!-- Button Request -->
-              <button @click="createRequest" class="w-full py-3 text-white bg-emerald-600 rounded-md shadow">
-                Buat Permintaan
-              </button>
-            </div>
+
+            <template x-if="(isOwner)">
+              <div class="flex flex-col gap-3">
+                <h4 class="text-emerald-600 font-medium">Daftar Riwayat Permintaan</h4>
+                
+                <template x-for="tx in product.transaction">
+                  <div class="border rounded-md p-3 flex items-center gap-2">
+                    <img x-bind:data-src="tx.taker.avatar_url" referrerpolicy="no-referrer" class="lazyload w-8 h-8 rounded-full" alt="avatar">
+                    <div class="flex flex-col flex-1">
+                      <span class="font-semibold" x-text="tx.taker.full_name"></span>
+                      <span class="text-sm capitalize" x-text="tx.status"></span>
+                    </div>
+
+                    <a x-bind:href="'/#/request/' + tx.id" class="cursor-pointer font-medium px-4 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
+                      Detail
+                    </a>
+                  </div>
+                </template>
+              </div>
+            </template>
           </div>
         </template>
       </div>
@@ -121,10 +158,12 @@ class ProductDetailView {
 
   async afterRender(alpine) {
     const { id } = UrlParser.parseActiveUrlWithoutCombiner();
+    const user = service.user.me();
 
     alpine.data('productDetail', () => ({
       product: null,
       isLoading: true,
+      isOwner: false,
       async init() {
         // TODO: Buat error message atau display untuk not found atau error
         try {
@@ -134,6 +173,15 @@ class ProductDetailView {
 
           this.product = product;
           this.isLoading = false;
+
+          this.isOwner = (this.product.user_id === user.id);
+
+          if (this.isOwner) {
+            const editButton = document.querySelector('#edit-product');
+
+            editButton.classList.remove('hidden');
+            editButton.setAttribute('href', `/#/product-edit/${this.product.id}`);
+          }
         } catch (err) {
           toastHelpers.error('Opps, informasi detail untuk produk ini gagal dimuat.');
           this.isLoading = false;
@@ -155,6 +203,12 @@ class ProductDetailView {
       },
       ago(date) {
         return fromNow(date);
+      },
+      createTitle(title) {
+        if (this.product && this.product.qty > 0) {
+          return title;
+        }
+        return `${title} (Kosong)`;
       },
       createWhatsappLink(profile) {
         const message = `Hai, saya baru saja melihat barang **${this.product.title}** yang anda posting di Aljaar. Bisakah saya tanya sesuatu tentangnya? terima kasih sebelumnya.`;
