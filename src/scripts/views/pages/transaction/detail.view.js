@@ -1,5 +1,6 @@
 import { service } from '../../../sdk';
 import { format } from '../../../utils/date';
+import { delay } from '../../../utils/helpers';
 import toastHelpers from '../../../utils/toast.helpers';
 import UrlParser from '../../../utils/url.parser';
 import { createEmptyResultTemplate, createPageHeader } from '../../templates/creator.template';
@@ -55,20 +56,71 @@ class TransactionDetailView {
               </div>
             </div>
 
-            <h3 class="text-sm font-bold text-emerald-700">Detail Timeline</h3>
+            <template x-if="!isRequest">
+              <section id="timeline" class="p-3">
+                <ol class="relative text-[12px] border-l border-gray-200">                  
+                  <template x-for="(log, index) in transaction.transaction_logs">
+                    <li x-bind:class="{'mb-8': !(transaction.transaction_logs.length === (index-1)) }" class="ml-4">
+                      <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                        <time class="mb-1 font-normal leading-none text-gray-400" x-text="formatDate(log.created_at)"></time>
+                      <h3 class="font-bold my-1 text-black capitalize" x-text="log.status"></h3>
+                      <p class="text-gray-600" x-text="useLogStatusText(log.status)"></p>
+                    </li>
+                  </template>
+                </ol>
+              </section>
+            </template>
 
-            <section id="timeline" class="p-3">
-              <ol class="relative text-[12px] border-l border-gray-200">                  
-                <template x-for="(log, index) in transaction.transaction_logs">
-                  <li x-bind:class="{'mb-8': !(transaction.transaction_logs.length === (index-1)) }" class="ml-4">
-                    <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white"></div>
-                      <time class="mb-1 font-normal leading-none text-gray-400" x-text="formatDate(log.created_at)"></time>
-                    <h3 class="font-bold my-1 text-black capitalize" x-text="log.status"></h3>
-                    <p class="text-gray-600" x-text="useLogStatusText(log.status)"></p>
-                  </li>
-                </template>
-              </ol>
-            </section>
+            <div>
+              <div class="flex">
+                <div
+                  class="flex flex-col items-center justify-center space-y-2 rounded p-3 mx-auto"
+                >
+                  <div class="flex space-x-0">
+                    <template x-for="(star, index) in ratings" :key="index">
+                      <button
+                        @click="rate(star.amount)"
+                        @mouseover="hoverRating = star.amount"
+                        @mouseleave="hoverRating = rating"
+                        aria-hidden="true"
+                        :title="star.label"
+                        class="rounded-sm text-gray-400 fill-current focus:outline-none focus:shadow-outline p-1 w-12 m-0 cursor-pointer"
+                      >
+                        <!-- <svg class="w-15 transition duration-150" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                          />
+                        </svg> -->
+                        <iconify-icon 
+                          icon="mdi:star" 
+                          class="text-3xl transition duration-150 drop-shadow"
+                          :class="{'text-gray-600': hoverRating >= star.amount, 'text-yellow-400': rating >= star.amount && hoverRating >= star.amount}"
+                        ></iconify-icon>
+                      </button>
+                    </template>
+                  </div>
+                  <div class="p-2">
+                    <template x-if="rating || hoverRating">
+                      <p x-text="currentLabel()"></p>
+                    </template>
+                    <template x-if="!rating && !hoverRating">
+                      <p>Please Rate!</p>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <template x-if="isRequest && transaction && transaction.status === 'waiting'">
+              <section id="response" class="flex gap-3">
+                <button @click="approveThis" class="w-full py-2 text-white bg-green-600 hover:bg-green-700 rounded-md">
+                  <span x-ref="approved_button">Approved</span>
+                </button>
+                <button @click="rejectThis" class="w-full py-2 text-white bg-pink-600 hover:bg-pink-700 rounded-md">
+                  Rejected
+                </button>
+              </section>
+            </template>
           </div>
         </template>
 
@@ -103,15 +155,25 @@ class TransactionDetailView {
   }
 
   async afterRender(alpine) {
-    const { id } = UrlParser.parseActiveUrlWithoutCombiner();
+    const { id, resource } = UrlParser.parseActiveUrlWithoutCombiner();
 
     alpine.data('transaction', () => ({
+      rating: 0,
+      hoverRating: 0,
+      ratings: [{ amount: 1, label: 'Terrible' }, { amount: 2, label: 'Bad' }, { amount: 3, label: 'Okay' }, { amount: 4, label: 'Good' }, { amount: 5, label: 'Great' }],
+      isRequest: false,
       isLoading: true,
       transaction: null,
       googleMapsLink: null,
+      confirm: {
+        approved: 'init',
+        approvedBtn: null,
+        rejected: 'init',
+      },
       async init() {
         try {
-          const { data: tx, error } = await service.transaction.detail(id);
+          this.isRequest = (resource === 'request');
+          const { data: tx, error } = await service.transaction.detail(id, this.isRequest);
           if (error) throw new Error(error);
 
           this.transaction = tx;
@@ -136,6 +198,52 @@ class TransactionDetailView {
         });
 
         this.googleMapsLink = googleMaps.link;
+      },
+      rate(amount) {
+        if (this.rating === amount) {
+          this.rating = 0;
+        } else this.rating = amount;
+      },
+      currentLabel() {
+        let r = this.rating;
+        if (this.hoverRating !== this.rating) r = this.hoverRating;
+        const i = this.ratings.findIndex((e) => e.amount === r);
+        if (i >= 0) { return this.ratings[i].label; } return '';
+      },
+      async approveThis() {
+        switch (this.confirm.approved) {
+          case 'init':
+            this.confirm.approved = 'confirm';
+            this.$refs.approved_button.innerHTML = String.raw`
+              <iconify-icon icon="ri:error-warning-line" inline></iconify-icon>
+              Click to confirm
+            `;
+            break;
+          case 'confirm': {
+            this.confirm.approved = 'processed';
+            this.$refs.approved_button.innerHTML = String.raw`
+              <iconify-icon icon="eos-icons:loading" inline></iconify-icon>
+              Mohon tunggu...
+            `;
+
+            const { data } = await service.transaction.approve(id);
+
+            if (!data) {
+              toastHelpers.error('Whops, gagal menyetujui permintaan ini.');
+            } else {
+              toastHelpers.success('Permintaan berhasil disetujui.');
+            }
+
+            await delay(300);
+            window.location = '/#/transactions';
+            break;
+          }
+          default:
+            break;
+        }
+      },
+      rejectThis() {
+
       },
       useStatusClass(status) {
         return {
