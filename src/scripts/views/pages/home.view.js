@@ -9,6 +9,12 @@ class HomeView {
       <button id="login" class="hidden">Login</button>
 
       <div x-data="productLists" class="flex flex-col px-4 pt-4 gap-3">
+        <template x-if="!permission.location">
+          <div class="card-pink">
+            <p>Hi <b x-text="name"></b>, kami perlu tau lokasi kamu saat ini untuk tau produk dan tetangga yang ada di sekitar mu. Pastikan untuk memberikan izin lokasimu ya.</p>
+          </div>
+        </template>
+
         <!-- Search -->
         <form>   
           <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Search</label>
@@ -132,6 +138,7 @@ class HomeView {
     const user = service.user.me();
 
     alpine.data('productLists', () => ({
+      name: user.profile.full_name,
       items: [],
       itemsAll: [],
       isLoading: true,
@@ -146,14 +153,21 @@ class HomeView {
       },
       neighbor_count: 0,
       async init() {
-        await this.permissionCheck();
-        await this.fetchProducts();
+        try {
+          await this.permissionCheck();
+          await this.fetchProducts();
 
-        this.$watch('filter', () => {
-          this.fetchProducts().catch(console.error);
-        });
+          this.$watch('filter', () => {
+            this.fetchProducts().catch(console.error);
+          });
+          this.getNeighborCount().catch();
+        } catch (error) {
+          if (error.message) {
+            toastHelpers.error(error.message);
+          }
 
-        this.getNeighborCount().catch();
+          this.isLoading = false;
+        }
       },
       async getNeighborCount() {
         const { data: count, error } = await service.user.getNeighborCount();
@@ -166,8 +180,7 @@ class HomeView {
       },
       async permissionCheck() {
         if (!navigator.geolocation) {
-          toastHelpers.error('Whopss, fitur GeoLocation tidak bisa digunakan di browser ini.');
-          return;
+          throw new Error('Whopss, fitur GeoLocation tidak bisa digunakan di browser ini.');
         }
 
         navigator.geolocation.getCurrentPosition(async () => {
