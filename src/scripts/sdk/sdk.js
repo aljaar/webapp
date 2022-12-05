@@ -433,7 +433,7 @@ function Aljaar({ supabase }) {
     transaction: {
       async waiting() {
         const { data: transactions } = await supabase.from('transactions')
-          .select('id, user_id, owner_id, product_id, created_at, products ( title, product_images (image) )')
+          .select('*, products ( title, category, product_images (image) )')
           .eq('owner_id', states.user.id)
           .eq('status', 'waiting');
 
@@ -445,6 +445,11 @@ function Aljaar({ supabase }) {
         return {
           data: transactions.map((tx) => ({
             ...tx,
+            products: {
+              ...tx.products,
+              product_images: usePublicUrl(tx.products.product_images[0].image)
+                .data.publicUrl,
+            },
             user: users.find((user) => user.user_id === tx.user_id),
           })),
         };
