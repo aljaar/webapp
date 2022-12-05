@@ -33,6 +33,15 @@ class TransactionDetailView {
             </section>
 
             <div class="flex flex-col gap-2 divide-y my-4">
+              <div class="pt-2 flex items-center justify-between text-sm">
+                <h4 class="text-emerald-600 font-semibold" x-text="(isRequest) ? 'Requester' : 'Owner'">-</h4>
+                <span class="space-x-2">
+                  <span x-text="transaction.profile.full_name"></span>
+                  <a href="">
+                    <iconify-icon class="text-base text-green-600" icon="ri:whatsapp-line" inline></iconify-icon>
+                  </a>
+                </span>
+              </div>
               <div class="pt-2 flex justify-between text-sm">
                 <h4 class="text-emerald-600 font-semibold">Waktu Pengambilan</h4>
                 <span x-text="transaction.products.drop_time.join(', ')"></span>
