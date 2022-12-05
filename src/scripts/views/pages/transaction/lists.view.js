@@ -36,36 +36,40 @@ class TransactionListsView {
 
         <div x-show="tab === 'request'" class="p-3 flex flex-col gap-3">
           <template x-if="!isLoading">
-            <template x-for="transaction in transaction.request" :key="transaction.id">
-              <a x-bind:href="'/#/transactions/' + transaction.id" class="p-3 rounded-md shadow-mdl">
-                <div class="flex pb-3 items-center justify-between border-b border-b-gray-200">
-                  <div class="flex items-center gap-3">
-                    <template x-if="isCategory(transaction, 'food')">
-                      <iconify-icon icon="mdi:food-turkey" class="text-xl text-emerald-700" inline></iconify-icon>
-                    </template>
-                    <template x-if="isCategory(transaction, 'non-food')">
-                      <iconify-icon icon="ri:shopping-bag-3-line" class="text-xl text-emerald-700" inline></iconify-icon>
-                    </template>
+            <div class="flex flex-col space-y-2">
+              <template x-if="transaction.request.length > 0">
+                <div class="text-sm rounded-md p-2 bg-pink-50 border border-pink-600 text-pink-600">
+                  <p>Beberapa daftar permintaan yang perlu anda response untuk di setujui atau tidak.</p>
+                </div>
+              </template>
+              <template x-for="transaction in transaction.request" :key="transaction.id">
+              <a x-bind:href="'/#/request/' + transaction.id" class="p-2 rounded-md shadow-mdl">
+                  <div class="flex pb-1 items-center justify-between border-b border-b-gray-200">
+                    <div class="flex items-center space-x-2">
+                      <template x-if="isCategory(transaction, 'food')">
+                        <iconify-icon icon="mdi:food-turkey" class="text-xl text-emerald-700" inline></iconify-icon>
+                      </template>
+                      <template x-if="isCategory(transaction, 'non-food')">
+                        <iconify-icon icon="ri:shopping-bag-3-line" class="text-xl text-emerald-700" inline></iconify-icon>
+                      </template>
+                      <div class="flex flex-col">
+                        <span class="text-[12px] font-bold capitalize" x-text="transaction.products.category === 'food' ? 'Food' : 'Non Food'"></span>
+                        <span class="text-[11px] text-gray-800">11 Oktober 2022</span>
+                      </div>
+                    </div>
+
+                    <div class="status text-[12px] py-1 px-2 rounded-lg capitalize" x-bind:class="useStatusClass(transaction.status)" x-text="transaction.status"></div>
+                  </div>
+                  <div class="flex gap-3 items-center pt-2">
+                    <img class="w-[64px] h-[54px] object-cover rounded-md border border-green-600 lazyload lazypreload" x-bind:data-src="transaction.products.product_images" src="images/loading.gif" x-bind:alt="transaction.products.title">
                     <div class="flex flex-col">
-                      <span class="text-[12px] font-bold capitalize" x-text="transaction.products.category === 'food' ? 'Food' : 'Non Food'"></span>
-                      <span class="text-[11px] text-gray-800">11 Oktober 2022</span>
+                      <h3 class="text-md font-semibold" x-text="transaction.products.title"></h3>
+                      <span class="text-sm text-gray-800">1 item</span>
                     </div>
                   </div>
-
-                  <div class="status text-[12px] py-1 px-2 rounded-lg capitalize" x-bind:class="useStatusClass(transaction.status)" x-text="transaction.status"></div>
-                </div>
-                <div class="flex gap-3 items-center py-3">
-                  <img class="w-[54px] h-[54px] object-cover rounded-md lazyload" x-bind:data-src="transaction.products.product_images" alt="">
-                  <div class="flex flex-col">
-                    <h3 class="text-md font-semibold" x-text="transaction.products.title"></h3>
-                    <span class="text-sm text-gray-800">1 item</span>
-                  </div>
-                </div>
-                <!-- <div class="flex justify-end">
-                  <button class="text-[14px] py-2 px-6 rounded-lg bg-green-600 text-white">Detail</button>
-                </div> -->
-              </a>
-            </template>
+                </a>
+              </template>
+            </div>
           </template>
 
           <template x-if="!isLoading && transaction.request.length === 0">
@@ -75,9 +79,9 @@ class TransactionListsView {
         <div x-show="tab === 'history'" class="p-3 flex flex-col gap-3">
           <template x-if="!isLoading">
             <template x-for="transaction in transaction.history" :key="transaction.id">
-              <a x-bind:href="'/#/transactions/' + transaction.id" class="p-3 rounded-md shadow-mdl">
-                <div class="flex pb-3 items-center justify-between border-b border-b-gray-200">
-                  <div class="flex items-center gap-3">
+              <a x-bind:href="'/#/transactions/' + transaction.id" class="p-2 rounded-md shadow-mdl">
+                <div class="flex pb-1 items-center justify-between border-b border-b-gray-200">
+                  <div class="flex items-center space-x-2">
                     <template x-if="isCategory(transaction, 'food')">
                       <iconify-icon icon="mdi:food-turkey" class="text-xl text-emerald-700" inline></iconify-icon>
                     </template>
@@ -92,16 +96,13 @@ class TransactionListsView {
 
                   <div class="status text-[12px] py-1 px-2 rounded-lg capitalize" x-bind:class="useStatusClass(transaction.status)" x-text="transaction.status"></div>
                 </div>
-                <div class="flex gap-3 items-center py-3">
-                  <img class="w-[54px] h-[54px] object-cover rounded-md lazyload" x-bind:data-src="transaction.products.product_images" alt="">
+                <div class="flex gap-3 items-center pt-2">
+                  <img class="w-[64px] h-[54px] object-cover rounded-md border border-green-600 lazyload lazypreload" x-bind:data-src="transaction.products.product_images" src="images/loading.gif" x-bind:alt="transaction.products.title">
                   <div class="flex flex-col">
                     <h3 class="text-md font-semibold" x-text="transaction.products.title"></h3>
                     <span class="text-sm text-gray-800">1 item</span>
                   </div>
                 </div>
-                <!-- <div class="flex justify-end">
-                  <button class="text-[14px] py-2 px-6 rounded-lg bg-green-600 text-white">Detail</button>
-                </div> -->
               </a>
             </template>
           </template>
