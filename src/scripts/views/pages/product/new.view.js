@@ -14,7 +14,7 @@ class NewProductView {
       title: 'Item Baru',
       menu: [
         String.raw`
-          <button id="saveItem" class="font-medium px-3 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
+          <button id="saveItem" class="cursor-pointer font-medium px-3 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
             <iconify-icon icon="mdi:content-save" inline></iconify-icon>
             Simpan
           </button>
@@ -140,13 +140,13 @@ class NewProductView {
         await this.initializeTags();
         this.initializeMaps();
 
-        this.data.title = 'Keyboard Key Cron 4';
-        this.data.description = 'Keyboard bekas yang masih bisa dipakai normal.';
-        this.data.category = 'non-food';
-        this.data.drop_time.push('08:00-12:00');
-        this.data.used_since = '6 bulan';
+        // this.data.title = 'Keyboard Key Cron 4';
+        // this.data.description = 'Keyboard bekas yang masih bisa dipakai normal.';
+        // this.data.category = 'non-food';
+        // this.data.drop_time.push('08:00-12:00');
+        // this.data.used_since = '6 bulan';
 
-        // this.data.drop_time.push('');
+        this.data.drop_time.push('');
 
         const submit = document.querySelector('#saveItem');
         submit.addEventListener('click', () => {
@@ -177,6 +177,7 @@ class NewProductView {
 
         this.data.drop_point = [user.location.lat, user.location.lon];
 
+        this.map.addControl(new Mapbox.NavigationControl(), 'top-left');
         this.map.addControl(
           new Mapbox.GeolocateControl({
             positionOptions: {
