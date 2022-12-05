@@ -98,7 +98,12 @@ class ProfileView {
             </div>
 
             <div x-show="tab === 'food'">
-              <div class="flex flex-col gap-2 divide-y">
+              <div class="flex flex-col gap-2 pb-8" x-bind:class="{'divide-y': useCategory('food').length > 0}">
+                <template x-if="useCategory('food').length === 0">
+                  <div class="card-pink mt-4">
+                    <p>Produk dengan kategori <b>Food</b> masih kosong.</p>
+                  </div>
+                </template>
                 <template x-for="item in useCategory('food')">
                   <div class="flex pt-2 pb-1 gap-4">
                     <div class="">
@@ -125,7 +130,12 @@ class ProfileView {
               </div>
             </div>
             <div x-show="tab === 'non-food'">
-              <div class="flex flex-col gap-2 divide-y">
+              <div class="flex flex-col gap-2 pb-8" x-bind:class="{'divide-y': useCategory('non-food').length > 0}">
+                <template x-if="useCategory('non-food').length === 0">
+                  <div class="card-pink mt-4">
+                    <p>Produk dengan kategori <b>Non Food</b> masih kosong.</p>
+                  </div>
+                </template>
                 <template x-for="item in useCategory('non-food')">
                   <div class="flex pt-2 pb-1 gap-4">
                     <div class="">
