@@ -23,8 +23,14 @@ export const createPageHeader = ({ title, menu, withBack = true }) => String.raw
 
 export const createProduct = () => String.raw`
   <div class="flex items-center pt-2 pb-1 gap-4">
-    <div class="">
+    <div class="relative">
       <img class="lazypreload lazyload w-32 h-24 object-cover rounded bg-green-50 border border-green-600" src="images/loading.gif" x-bind:data-src="image(item.image)" x-bind:alt="item.title">
+    
+      <template x-if="item.qty === 0">
+        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+          <span class="text-white">Kosong</span>
+        </div>
+      </template>
     </div>
     <div class="h-24 flex flex-col flex-1 justify-between">
       <a x-bind:href="'/#/product/' + item.product_id">
@@ -51,7 +57,7 @@ export const createProduct = () => String.raw`
         </div>
       </div>
     </div>
-    <a x-bind:href="'/#/product/' + item.product_id" class="flex items-center justify-center rounded-full hover:bg-gray-100 w-12 h-12">
+    <a x-bind:href="'/#/product/' + item.product_id" class="sm:flex items-center justify-center rounded-full hover:bg-gray-100 w-12 h-12 hidden">
       <iconify-icon icon="heroicons-outline:arrow-right" inline></iconify-icon>
     </a>
   </div>
