@@ -54,6 +54,9 @@ header .header-logo iconify-icon {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
 
+.card-pink {
+  @apply text-sm rounded-md p-2 bg-pink-50 border border-pink-600 text-pink-600;
+}
 .form-control {
   @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5;
 }
@@ -107,14 +110,6 @@ header .header-logo iconify-icon {
 navigation-navbar {
   list-style-type: none;
   display: inline-block;
-  border-width: 1px 0px 0px;
-  border-right-style: initial;
-  border-bottom-style: initial;
-  border-left-style: initial;
-  border-right-color: initial;
-  border-bottom-color: initial;
-  border-left-color: initial;
-  border-image: initial;
   font-weight: 600;
   line-height: 13px;
   text-align: center;
@@ -129,10 +124,10 @@ navigation-navbar {
   z-index: 10;
   padding: 10px;
   font-size: 1em;
-  border-top-style: solid;
-  border-top-color: rgb(222, 222, 222);
   margin: 0px;
   background-color: rgb(255, 255, 255);
+
+  @apply border-t border-t-gray-300;
 }
 navigation-navbar .menu-item {
   display: inline-block;
@@ -146,18 +141,16 @@ navigation-navbar .menu-item .menu-item--icon {
   margin-bottom: 4px;
 }
 navigation-navbar .menu-item .menu-item--icon iconify-icon {
-  @apply text-gray-400;
   display: inline-block;
   font-size: 24px;
 }
 navigation-navbar .menu-item .menu-item--text {
-  @apply text-gray-400;
   white-space: nowrap;
   display: inline-block;
 }
-navigation-navbar .menu-item.active .menu-item--icon iconify-icon {
-  @apply text-emerald-600;
+navigation-navbar .menu-item:not(.active) {
+  @apply text-gray-600;
 }
-navigation-navbar .menu-item.active .menu-item--text {
+navigation-navbar .menu-item.active {
   @apply text-emerald-600;
 }
