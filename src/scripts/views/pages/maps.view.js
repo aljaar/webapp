@@ -36,7 +36,7 @@ class MapsView {
         <template x-if="product">
           <section id="product" class="absolute w-[calc(100%-1.5em)] text-center z-10 bottom-12 left-3">
             <div class="flex items-center rounded-lg bg-white shadow-mdl h-24 gap-4">
-              <img class="lazyload lazypreload w-32 h-24 object-cover rounded" x-bind:data-src="image(product.image)" src="images/loading.gif" x-bind:alt="product.title">
+              <img id="product_image" class="lazyload lazypreload w-32 h-24 object-cover rounded" x-bind:data-src="image(product.image)" src="images/loading.gif" x-bind:alt="product.title">
               
               <div class="h-24 flex flex-col flex-1 justify-between py-3 text-left">
                 <a x-bind:href="'/#/product/' + product.product_id">
@@ -131,7 +131,7 @@ class MapsView {
 
           this.map.addControl(this.geolocate, 'top-left');
 
-          const home = createMarker('home', [user.location.lon, user.location.lat]).addTo(this.map);
+          createMarker('home', [user.location.lon, user.location.lat]).addTo(this.map);
 
           this.map.addSource('points', {
             type: 'geojson',
@@ -153,10 +153,10 @@ class MapsView {
             source: 'points',
             filter: ['has', 'point_count'],
             paint: {
-              'circle-color': '#16a34a',
-              'circle-radius': 18,
-              'circle-stroke-width': 1,
-              'circle-stroke-color': '#fff',
+              'circle-color': '#fff',
+              'circle-radius': 11,
+              'circle-stroke-width': 3,
+              'circle-stroke-color': '#16a34a',
             },
           });
 
@@ -169,6 +169,9 @@ class MapsView {
             layout: {
               'text-field': '{point_count_abbreviated}',
               'text-size': 12,
+            },
+            paint: {
+              'text-color': '#000',
             },
           });
 
@@ -190,7 +193,14 @@ class MapsView {
             source: 'points',
             filter: ['!', ['has', 'point_count']],
             paint: {
-              'circle-color': '#16a34a',
+              'circle-color': {
+                property: 'category',
+                type: 'categorical',
+                stops: [
+                  ['food', '#16a34a'],
+                  ['non-food', '#db2777'],
+                ],
+              },
               'circle-radius': 8,
               'circle-stroke-width': 2,
               'circle-stroke-color': '#fff',
@@ -236,6 +246,12 @@ class MapsView {
 
             this.product = e.features[0].properties;
             this.product.profile = JSON.parse(this.product.profile);
+
+            const productImage = document.querySelector('#product_image');
+            if (productImage && !productImage.classList.contains('lazyload')) {
+              productImage.classList.add('lazyload');
+              productImage.setAttribute('src', 'images/loading.gif');
+            }
           });
         });
       },
