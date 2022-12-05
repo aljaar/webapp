@@ -468,17 +468,19 @@ function Aljaar({ supabase }) {
           .eq('status', 'approved')
           .is('rating', null));
       },
-      async detail(id) {
+      async detail(id, isRequest = false) {
+        const column = isRequest ? 'owner_id' : 'user_id';
         const result = await wrapper(() => supabase.from('transactions')
           .select('*, products (id, title, category, drop_time, drop_point, user_id, product_images (image)), transaction_logs (status, created_at)')
-          .eq('user_id', states.user.id)
+          .eq(column, states.user.id)
           .eq('id', id)
           .single());
 
         if (!result.error) {
-          const userId = result.data.products.user_id;
+          const userType = !isRequest ? 'owner_id' : 'user_id';
+          const userId = result.data[userType];
           const { data: profile } = await supabase.from('profiles')
-            .select('full_name, avatar_url')
+            .select('full_name, avatar_url, phone')
             .eq('user_id', userId)
             .single();
 
