@@ -1,4 +1,5 @@
 import { service } from '../../sdk';
+import { isExpired } from '../../utils/date';
 import { delay } from '../../utils/helpers';
 import toastHelpers from '../../utils/toast.helpers';
 import { createProduct, listsSkeletonLoading } from '../templates/creator.template';
@@ -8,7 +9,7 @@ class HomeView {
     return String.raw`
       <button id="login" class="hidden">Login</button>
 
-      <div x-data="productLists" class="flex flex-col px-4 pt-4 gap-3">
+      <div x-data="productLists" class="flex flex-col px-4 pt-4 gap-2">
         <template x-if="!permission.location">
           <div class="card-pink">
             <p>Hi <b x-text="name"></b>, kami perlu tau lokasi kamu saat ini untuk tau produk dan tetangga yang ada di sekitar mu. Pastikan untuk memberikan izin lokasimu ya.</p>
@@ -32,10 +33,10 @@ class HomeView {
             <button @click="filterOpen = !filterOpen" type="button" class="text-white bg-green-600 border border-green-600 font-medium rounded-full text-sm px-3 py-1">
               Filter
             </button>
-            <button @click="toggleCategory('food')" x-bind:class="useFilterCategoryClass('food')" class="rounded-full text-sm px-3 py-1">
+            <button @click="toggleCategory('food')" x-bind:class="useFilterCategoryClass('food')" class="rounded-full text-sm px-4 py-1 font-medium">
               Food
             </button>
-            <button @click="toggleCategory('non-food')" x-bind:class="useFilterCategoryClass('non-food')" class="rounded-full text-sm px-3 py-1">
+            <button @click="toggleCategory('non-food')" x-bind:class="useFilterCategoryClass('non-food')" class="rounded-full text-sm px-4 py-1 font-medium">
               Non-Food
             </button>
           </div>
@@ -52,7 +53,7 @@ class HomeView {
         </div>
 
         <!-- Product Lists -->
-        <div class="flex flex-col gap-2 divide-y">
+        <div class="flex flex-col gap-2 divide-y pb-24">
           <template x-if="!isLoading">
             <template x-for="item in items">
               ${createProduct()}
@@ -188,6 +189,7 @@ class HomeView {
 
           if (!user.location) {
             await service.auth.updateWithCurrentLocation();
+            await service.auth.user();
             toastHelpers.success('Lokasi anda berhasil diperbarui');
           }
         }, (error) => {
@@ -220,6 +222,9 @@ class HomeView {
         const { data: { publicUrl } } = service.helpers.usePublicUrl(item);
         return publicUrl;
       },
+      isExpired(product) {
+        return (product.category === 'food' && isExpired(product.expired_at));
+      },
       toggleFilter(column, type) {
         this.filter.filters = [column, type];
       },
@@ -245,7 +250,7 @@ class HomeView {
       useFilterCategoryClass(type) {
         return {
           'text-white bg-green-600': (this.filter.category === type),
-          'text-green-700 bg-green-50 ring-1 ring-green-500': (this.filter.category !== type),
+          'text-gray-700 bg-gray-100': (this.filter.category !== type),
         };
       },
     }));
