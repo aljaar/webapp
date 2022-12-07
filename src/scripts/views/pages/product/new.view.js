@@ -1,6 +1,4 @@
 import Choices from 'choices.js';
-import 'choices.js/public/assets/styles/choices.min.css';
-
 import { FileUploadWithPreview } from 'file-upload-with-preview/dist/file-upload-with-preview.esm';
 import Mapbox from 'mapbox-gl';
 import config from '../../../config/app.config';
@@ -59,7 +57,7 @@ class NewProductView {
           <template x-if="data.category === 'food'">
             <div>
               <h2 class="form-control-label">Expired Date</h2>
-              <input type="date" class="form-control" x-model="data.expiredAt">
+              <input type="date" class="form-control" x-model="data.expired_at">
             </div>
           </template>
           <template x-if="data.category === 'non-food'">
@@ -123,6 +121,7 @@ class NewProductView {
         chooseFile: 'Take your pick...',
         label: 'Choose Files to Upload',
       },
+      accept: '.jpg,.jpeg,.png,.gif',
     });
 
     window.upload = upload;
@@ -139,12 +138,6 @@ class NewProductView {
       async init() {
         await this.initializeTags();
         this.initializeMaps();
-
-        // this.data.title = 'Keyboard Key Cron 4';
-        // this.data.description = 'Keyboard bekas yang masih bisa dipakai normal.';
-        // this.data.category = 'non-food';
-        // this.data.drop_time.push('08:00-12:00');
-        // this.data.used_since = '6 bulan';
 
         this.data.drop_time.push('');
 
