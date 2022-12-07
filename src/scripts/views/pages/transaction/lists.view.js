@@ -34,7 +34,7 @@ class TransactionListsView {
           </div>
         </template>
 
-        <div x-show="tab === 'request'" class="p-3 flex flex-col gap-3">
+        <div x-show="tab === 'request'" x-transition class="p-3 flex flex-col gap-3">
           <template x-if="!isLoading">
             <div class="flex flex-col space-y-2">
               <template x-if="transaction.request.length > 0">
@@ -76,7 +76,7 @@ class TransactionListsView {
             ${createEmptyListTemplate()}
           </template>
         </div>
-        <div x-show="tab === 'history'" class="p-3 flex flex-col gap-3">
+        <div x-show="tab === 'history'" x-transition class="p-3 flex flex-col gap-3">
           <template x-if="!isLoading">
             <template x-for="transaction in transaction.history" :key="transaction.id">
               <a x-bind:href="'/#/transactions/' + transaction.id" class="p-2 rounded-md shadow-mdl">
@@ -138,7 +138,7 @@ class TransactionListsView {
           // TODO: ganti
           const { data: transactions } = await service.transaction.waiting();
           this.transaction.request = transactions;
-          this.transaction.request_count = transactions.length;
+          this.transaction.request_count = transactions.filter((tx) => tx.status === 'waiting').length;
         } else if (this.tab === 'history') {
           const { data: transactions } = await service.transaction.lists();
           this.transaction.history = transactions;
