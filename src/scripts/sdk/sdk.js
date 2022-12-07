@@ -159,6 +159,24 @@ function Aljaar({ supabase }) {
       me() {
         return states.user;
       },
+      async profile(id) {
+        if (id === states.user.profile.id) {
+          window.location = '/#/profile';
+        }
+
+        const { data: profile } = await supabase.from('profiles')
+          .select()
+          .eq('id', id)
+          .single();
+
+        if (profile.location) {
+          profile.user_location = await geographyToCoordinates(supabase, profile.location);
+        } else {
+          profile.user_location = false;
+        }
+
+        return profile;
+      },
       async update(data) {
         const { full_name: fullName, phone, description } = states.user.profile;
         const update = {};
