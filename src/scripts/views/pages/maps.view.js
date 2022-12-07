@@ -3,6 +3,7 @@ import { point } from '@turf/helpers';
 import Mapbox from 'mapbox-gl';
 import config from '../../config/app.config';
 import { service } from '../../sdk';
+import { isExpired } from '../../utils/date';
 import { createPageHeader } from '../templates/creator.template';
 
 class MapsView {
@@ -36,8 +37,21 @@ class MapsView {
         <template x-if="product">
           <section id="product" class="absolute w-[calc(100%-1.5em)] text-center z-10 bottom-12 left-3">
             <div class="flex items-center rounded-lg bg-white shadow-mdl h-24 gap-4">
-              <img id="product_image" class="lazyload lazypreload w-32 h-24 object-cover rounded" x-bind:data-src="image(product.image)" src="images/loading.gif" x-bind:alt="product.title">
+              <div class="relative">
+                <img id="product_image" class="lazyload lazypreload w-32 h-24 object-cover rounded" x-bind:data-src="image(product.image)" src="images/loading.gif" x-bind:alt="product.title">
               
+                <template x-if="product.qty === 0">
+                  <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+                    <span class="text-white">Kosong</span>
+                  </div>
+                </template>
+                
+                <template x-if="isExpired(product)">
+                  <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+                    <span class="text-white">Expired</span>
+                  </div>
+                </template>
+              </div>
               <div class="h-24 flex flex-col flex-1 justify-between py-3 text-left">
                 <a x-bind:href="'/#/product/' + product.product_id">
                   <h3 x-text="product.title" class="font-semibold"></h3>
@@ -254,6 +268,9 @@ class MapsView {
             }
           });
         });
+      },
+      isExpired(product) {
+        return (product.category === 'food' && isExpired(product.expired_at));
       },
       image(item) {
         const { data: { publicUrl } } = service.helpers.usePublicUrl(item);
