@@ -20,7 +20,7 @@ class ProfileEditView {
               <iconify-icon icon="mdi:camera" class="text-[14px] text-white" inline></iconify-icon>
             </button>
 
-            <input type="file" class="hidden" id="avatar" @change="onNewAvatar">
+            <input type="file" accept=".jpg,.jpeg,.png,.gif" class="hidden" id="avatar" @change="onNewAvatar">
           </div>
         </div>
 
@@ -40,9 +40,6 @@ class ProfileEditView {
           <div>
             <label for="about" class="form-control-label">Bio Singkat</label>
             <textarea id="about" class="form-control" x-model="about"></textarea>
-          </div>
-          <div class="p-2 bg-gray-100">
-            <p class="text-sm text-gray-700">Informasi berikut <b>hanya dapat dilihat oleh kamu</b> dan tidak akan kami publikasikan</p>
           </div>
           <div class="flex justify-center my-6">
             <button @click="saveChanges" class="w-full font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-emerald-600 text-white hover:bg-emerald-700">Simpan Perubahan</button>
@@ -84,7 +81,7 @@ class ProfileEditView {
         if (this.avatar) {
           data.avatar = this.avatar;
         }
-        console.log(data)
+        console.log(data);
 
         const loading = toastHelpers.loading();
         const result = await service.user.update(data);
