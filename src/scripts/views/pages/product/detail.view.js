@@ -1,5 +1,5 @@
 import { service } from '../../../sdk';
-import { fromNow } from '../../../utils/date';
+import { fromNow, isExpired } from '../../../utils/date';
 import { delay } from '../../../utils/helpers';
 import toastHelpers from '../../../utils/toast.helpers';
 import UrlParser from '../../../utils/url.parser';
@@ -106,30 +106,31 @@ class ProductDetailView {
             </div>
 
             <template x-if="!isOwner">
-              <!-- User (Avatar Nama) -->
-              <div class="flex items-center gap-2 my-4">
-                <img x-bind:data-src="product.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload w-8 h-8 rounded-full" alt="">
-                <div class="flex flex-col flex-1">
-                  <span x-text="product.profile.full_name"></span>
+              <div>
+                <!-- User (Avatar Nama) -->
+                <div class="flex items-center gap-2 my-4">
+                  <img x-bind:data-src="product.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload w-8 h-8 rounded-full" alt="">
+                  <div class="flex flex-col flex-1">
+                    <span x-text="product.profile.full_name"></span>
+                  </div>
+
+                  <!-- Button Contact WA -->
+                  <template x-if="product.profile.phone">
+                    <a x-bind:href="createWhatsappLink(product.profile)" target="_blank" class="py-2 px-4 text-sm text-white bg-emerald-600 bg rounded-md shadow">
+                      <iconify-icon icon="ri:whatsapp-line" inline></iconify-icon>
+                      <span>Whatsapp</span>
+                    </a>
+                  </template>
                 </div>
 
-                <!-- Button Contact WA -->
-                <template x-if="product.profile.phone">
-                  <a x-bind:href="createWhatsappLink(product.profile)" target="_blank" class="py-2 px-4 text-sm text-white bg-emerald-600 bg rounded-md shadow">
-                    <iconify-icon icon="ri:whatsapp-line" inline></iconify-icon>
-                    <span>Whatsapp</span>
-                  </a>
-                </template>
-              </div>
-
-              <div class="flex gap-3">
-                <!-- Button Request -->
-                <button @click="createRequest" x-show="product.qty > 0" class="w-full py-3 text-white bg-emerald-600 rounded-md shadow">
-                  Buat Permintaan
-                </button>
+                <div class="flex gap-3">
+                  <!-- Button Request -->
+                  <button @click="createRequest" class="w-full py-3 text-white bg-emerald-600 rounded-md shadow" :class="{'bg-green-600': isRequestable(), 'bg-gray-700': !isRequestable()}" :disabled="!isRequestable()">
+                    Buat Permintaan
+                  </button>
+                </div>
               </div>
             </template>
-
 
             <template x-if="(isOwner)">
               <div class="flex flex-col gap-3">
@@ -140,12 +141,18 @@ class ProductDetailView {
                     <img x-bind:data-src="tx.taker.avatar_url" referrerpolicy="no-referrer" class="lazyload w-8 h-8 rounded-full" alt="avatar">
                     <div class="flex flex-col flex-1">
                       <span class="font-semibold" x-text="tx.taker.full_name"></span>
-                      <span class="text-sm capitalize" x-text="tx.status"></span>
+                      <span class="text-sm font-medium capitalize" :class="useStatusClass(tx.status)" x-text="tx.status"></span>
                     </div>
 
                     <a x-bind:href="'/#/request/' + tx.id" class="cursor-pointer font-medium px-4 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
                       Detail
                     </a>
+                  </div>
+                </template>
+
+                <template x-if="product.transaction.length === 0">
+                  <div class="card-pink">
+                    <p>Belum ada yang membutuhkan makan/ barang yang anda bagikan.</p>
                   </div>
                 </template>
               </div>
@@ -165,7 +172,6 @@ class ProductDetailView {
       isLoading: true,
       isOwner: false,
       async init() {
-        // TODO: Buat error message atau display untuk not found atau error
         try {
           const product = await service.product.detail(id);
           await delay(500);
@@ -205,15 +211,33 @@ class ProductDetailView {
         return fromNow(date);
       },
       createTitle(title) {
-        if (this.product && this.product.qty > 0) {
-          return title;
+        if (this.product.qty === 0) {
+          return `${title} (Kosong)`;
         }
-        return `${title} (Kosong)`;
+
+        if (this.product.category === 'food' && isExpired(this.product.expired_at)) {
+          return `${title} (Expired)`;
+        }
+        return title;
+      },
+      isRequestable() {
+        if (this.product.qty === 0) return false;
+        if (this.product.category === 'food' && isExpired(this.product.expired_at)) return false;
+
+        return true;
       },
       createWhatsappLink(profile) {
         const message = `Hai, saya baru saja melihat barang **${this.product.title}** yang anda posting di Aljaar. Bisakah saya tanya sesuatu tentangnya? terima kasih sebelumnya.`;
 
         return `https://wa.me/${profile.phone.replace('+', '')}?text=${encodeURIComponent(message)}`;
+      },
+      useStatusClass(status) {
+        return {
+          'text-yellow-600': (status === 'waiting'),
+          'text-blue-600': (status === 'approved'),
+          'text-red-600': (status === 'rejected'),
+          'text-green-600': (status === 'success'),
+        };
       },
     }));
   }
