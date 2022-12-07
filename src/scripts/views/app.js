@@ -76,9 +76,7 @@ class App {
 
       await page.afterRender(this._alpine);
     } catch (error) {
-      console.error(error);
-
-      this._content.innerHTML = this._renderErrorNotFound();
+      this._content.innerHTML = this._renderErrorNotFound(error);
     }
   }
 
@@ -108,15 +106,14 @@ class App {
     }
   }
 
-  _renderErrorNotFound() {
+  _renderErrorNotFound(error) {
     return String.raw`
-      <section class="restaurant restaurant_favorite">
-        <div class="wrapper_container">
-          <div class="restaurant_contents">
-            <div class="restaurant__empty_result active">
-              <random-emoji></random-emoji>
-              <span>Whopss! we can't found the page your are requested.</span>
-            </div>
+      <section id="error-page-notfound" class="px-4 py-8">
+        <div class="w-full">
+          <div class="flex flex-col items-center space-y-3 mx-auto text-center">
+            <img src="images/empty.webp" class="w-64" alt="Empty Lists">
+            <p>Whops, ada kesalahan yang terjadi.</p>
+            <p class="text-sm text-gray-700">${error}</p>
           </div>
         </div>
       </section>
