@@ -20,8 +20,6 @@ function Aljaar({ supabase }) {
     .from('avatars')
     .getPublicUrl('public/avatar.default.webp');
 
-  console.log(publicAvatar);
-
   const usePublicUrl = (path) => supabase.storage.from('products').getPublicUrl(path);
 
   emitter.on('aljaar:on:error', (error) => {
@@ -57,8 +55,6 @@ function Aljaar({ supabase }) {
         break;
     }
   });
-
-  window.supabase = supabase;
 
   return {
     emitter,
@@ -568,7 +564,7 @@ function Aljaar({ supabase }) {
         }));
       },
       review(id, { rating, comment }) {
-        return wrapper(() => supabase.rpc('review_transactions', {
+        return wrapper(() => supabase.rpc('review_transaction', {
           tx_id: id,
           rating_value: rating,
           comment_value: comment,
