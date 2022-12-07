@@ -79,6 +79,10 @@ class UserLocationView {
           lng: center.lng,
         });
         await service.auth.user();
+
+        const update = service.user.me();
+        await service.user.getAddress(update, true);
+
         toastHelpers.dismiss(loading);
 
         toastHelpers.success('Lokasi anda berhasil diupdate.');
