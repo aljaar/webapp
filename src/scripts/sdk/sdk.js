@@ -471,8 +471,7 @@ function Aljaar({ supabase }) {
       async waiting() {
         const { data: transactions } = await supabase.from('transactions')
           .select('*, products ( title, category, product_images (image) )')
-          .eq('owner_id', states.user.id)
-          .eq('status', 'waiting');
+          .eq('owner_id', states.user.id);
 
         const userId = transactions.map((tx) => tx.user_id);
         const { data: users } = await supabase.from('profiles')
@@ -517,7 +516,7 @@ function Aljaar({ supabase }) {
           const userType = !isRequest ? 'owner_id' : 'user_id';
           const userId = result.data[userType];
           const { data: profile } = await supabase.from('profiles')
-            .select('full_name, avatar_url, phone')
+            .select('id, full_name, avatar_url, phone')
             .eq('user_id', userId)
             .single();
 
