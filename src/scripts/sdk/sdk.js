@@ -243,12 +243,19 @@ function Aljaar({ supabase }) {
           location: `SRID=4326;POINT(${position.lng} ${position.lat})`,
         }).eq('user_id', states.user.id));
       },
-      async getAddress() {
+      async getAddress(user, update = false) {
+        if (user.profile.address && !update) return user.profile.address;
+
         const { result: { address } } = await coordinateEncoder([
-          states.user.location.lat,
-          states.user.location.lon,
+          user.location.lat,
+          user.location.lon,
         ]);
-        states.user.locationAddress = address;
+
+        if (user.profile.address !== address || update) {
+          await supabase.from('profiles').update({
+            address,
+          }).eq('id', user.profile.id);
+        }
 
         return address;
       },
