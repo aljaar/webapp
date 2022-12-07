@@ -1,4 +1,5 @@
 import { service } from '../../sdk';
+import { isExpired } from '../../utils/date';
 import { createPageHeader } from '../templates/creator.template';
 
 class ProfileView {
@@ -22,11 +23,10 @@ class ProfileView {
   async render() {
     return String.raw`
       <div class="profile" x-data="profile">
-        <!-- Header End -->
         <div class="p-4">
           <div class="flex flex-row mx-auto mb-6">
             <div>
-              <img x-bind:data-src="user.profile.avatar_url" alt="aljaar" class="lazyload rounded-full w-24">
+              <img x-bind:data-src="user.profile.avatar_url" alt="Profile Picture" class="lazyload rounded-full w-24" referrerpolicy="no-referrer">
             </div>
             <div class="flex flex-col gap-2 self-center ml-4">
               <h1 class="capitalize text-xl text-gray-900 font-semibold" x-text="user.profile.full_name"></h1>
@@ -97,7 +97,7 @@ class ProfileView {
               </ul>
             </div>
 
-            <div x-show="tab === 'food'">
+            <div x-show="tab === 'food'" x-transition>
               <div class="flex flex-col gap-2 pb-8" x-bind:class="{'divide-y': useCategory('food').length > 0}">
                 <template x-if="useCategory('food').length === 0">
                   <div class="card-pink mt-4">
@@ -106,8 +106,20 @@ class ProfileView {
                 </template>
                 <template x-for="item in useCategory('food')">
                   <div class="flex pt-2 pb-1 gap-4">
-                    <div class="">
+                    <div class="relative">
                       <img class="lazyload lazypreload w-32 h-24 object-cover rounded shadow" x-bind:data-src="productImage(item)" src="images/loading.gif" x-bind:alt="item.title">
+                  
+                      <template x-if="item.qty === 0">
+                        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+                          <span class="text-white">Kosong</span>
+                        </div>
+                      </template>
+                      
+                      <template x-if="isExpired(item)">
+                        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+                          <span class="text-white">Expired</span>
+                        </div>
+                      </template>
                     </div>
                     <div class="flex flex-col gap-2">
                       <a x-bind:href="'/#/product/' + item.id">
@@ -129,7 +141,7 @@ class ProfileView {
                 </template>
               </div>
             </div>
-            <div x-show="tab === 'non-food'">
+            <div x-show="tab === 'non-food'" x-transition>
               <div class="flex flex-col gap-2 pb-8" x-bind:class="{'divide-y': useCategory('non-food').length > 0}">
                 <template x-if="useCategory('non-food').length === 0">
                   <div class="card-pink mt-4">
@@ -138,8 +150,20 @@ class ProfileView {
                 </template>
                 <template x-for="item in useCategory('non-food')">
                   <div class="flex pt-2 pb-1 gap-4">
-                    <div class="">
+                    <div class="relative">
                       <img class="lazyload w-32 h-24 object-cover rounded shadow" x-bind:data-src="productImage(item)" x-bind:alt="item.title">
+
+                      <template x-if="item.qty === 0">
+                        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+                          <span class="text-white">Kosong</span>
+                        </div>
+                      </template>
+                      
+                      <template x-if="isExpired(item)">
+                        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+                          <span class="text-white">Expired</span>
+                        </div>
+                      </template>
                     </div>
                     <div class="flex flex-col gap-2">
                       <a x-bind:href="'/#/product/' + item.id">
@@ -194,7 +218,7 @@ class ProfileView {
           service.product.all().then((products) => {
             this.products = products;
           }),
-          service.user.getAddress().then((address) => {
+          service.user.getAddress(user).then((address) => {
             this.address = address;
           }),
         ]);
@@ -208,6 +232,9 @@ class ProfileView {
       image(item) {
         const { data: { publicUrl } } = service.helpers.usePublicUrl(item);
         return publicUrl;
+      },
+      isExpired(product) {
+        return (product.category === 'food' && isExpired(product.expired_at));
       },
     }));
   }
