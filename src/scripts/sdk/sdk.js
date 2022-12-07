@@ -345,22 +345,18 @@ function Aljaar({ supabase }) {
           drop_time: data.drop_time,
         }));
       },
-      async update(id, { data }) {
-        // TODO: validate data
+      async update(id, { data, tags }) {
         const { value: product, error } = await wrapper(() => validator.editProduct({
           ...data,
         }));
 
         if (error) return { data: null, error };
 
-        const { tags } = product;
-        delete product.tags;
+        // if (product.drop_point) {
+        //   const [lat, lon] = product.drop_point;
 
-        if (product.drop_point) {
-          const [lat, lon] = product.drop_point;
-
-          product.drop_point = `SRID=4326;POINT(${lon} ${lat})`;
-        }
+        //   product.drop_point = `SRID=4326;POINT(${lon} ${lat})`;
+        // }
 
         const tasks = [
           wrapper(() => supabase.from('products').update({
@@ -368,16 +364,32 @@ function Aljaar({ supabase }) {
           }).eq('id', id)),
         ];
 
-        if (tags && tags.length > 0) {
-          tasks.push(wrapper(() => supabase.rpc('add_product_tag', {
-            p_id: id,
-            tags,
-          })));
+        if (tags.isChanged) {
+          if (tags.added.length) {
+            const addedTags = tags.added.map((tag) => tag.id);
+
+            tasks.push(wrapper(() => supabase.rpc('add_product_tag', {
+              p_id: parseInt(id, 10),
+              tags: addedTags,
+            })));
+          }
+          if (tags.deleted.length) {
+            const deletedTags = tags.deleted.map((tag) => tag.id);
+
+            tasks.push(wrapper(() => supabase.rpc('delete_product_tag', {
+              p_id: parseInt(id, 10),
+              tags: deletedTags,
+            })));
+          }
         }
 
-        const update = await Promise.all(tasks);
+        try {
+          await Promise.all(tasks);
 
-        return { id, product, update };
+          return { data: true, error: null };
+        } catch (err) {
+          return { data: true, error: err };
+        }
       },
       async delete(id) {
         return wrapper(() => supabase.rpc('delete_product', {
