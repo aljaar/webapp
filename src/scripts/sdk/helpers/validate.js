@@ -19,6 +19,7 @@ export const product = (data) => {
     title: joi.string().min(8).label('Title').required(),
     description: joi.string().label('Description').required(),
     category: joi.string().valid('food', 'non-food').label('Category').required(),
+    qty: joi.number().label('QTY').required(),
     tags: joi.array().items(joi.number()).min(1).label('Tags')
       .required(),
     drop_point: joi.array().items(joi.number()).label('Pick Up Point').required(),
@@ -43,6 +44,7 @@ export const editProduct = (data) => {
     title: joi.string().min(8).label('Title').optional(),
     description: joi.string().label('Description').optional(),
     category: joi.string().valid('food', 'non-food').label('Category').optional(),
+    qty: joi.number().label('QTY').optional(),
     tags: joi.array().items(joi.number()).label('Tags').optional(),
     drop_point: joi.array().items(joi.number()).label('Pick Up Point').optional(),
     drop_time: joi.array().items(joi.string()).label('Pick Up Time').optional(),
