@@ -16,6 +16,8 @@ const routes = {
     .then((view) => view.default),
   '/profile': import(/* webpackChunkName: "profile-view" */ '../views/pages/profile.view')
     .then((view) => view.default),
+  '/profile/:id': import(/* webpackChunkName: "profile-detail-view" */ '../views/pages/user/detail.view')
+    .then((view) => view.default),
   '/profile-edit': import(/* webpackChunkName: "profile-edit-view" */ '../views/pages/profile.edit.view')
     .then((view) => view.default),
   '/location': import(/* webpackChunkName: "location-update-view" */ '../views/pages/location.view')
