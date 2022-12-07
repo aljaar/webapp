@@ -10,7 +10,7 @@ import 'notyf/notyf.min.css';
 
 import Alpine from 'alpinejs';
 import App from './views/app';
-// import ServiceWorker from './utils/sw.register';
+import ServiceWorker from './utils/sw.register';
 
 window.Alpine = Alpine;
 
@@ -26,4 +26,5 @@ window.addEventListener('hashchange', () => {
 
 window.addEventListener('load', () => {
   app.renderPage();
+  ServiceWorker.register();
 });

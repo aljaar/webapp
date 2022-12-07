@@ -51,14 +51,6 @@ module.exports = merge(common, {
           },
           {
             loader: 'postcss-loader',
-            options: {
-              sourceMap: true,
-              postcssOptions: {
-                plugins: {
-                  autoprefixer: '',
-                },
-              },
-            },
           },
         ],
       },
@@ -88,32 +80,32 @@ module.exports = merge(common, {
       filename: 'app.webmanifest',
       start_url: './index.html',
       short_name: 'Aljaar',
-      description: 'Waste Less, Share More',
+      description: 'Share More, Waste Less',
       background_color: '#ffffff',
-      theme_color: '#d9a404',
+      theme_color: '#15803d',
       crossorigin: 'use-credentials',
       fingerprints: false,
       ios: true,
       icons: [
-        // {
-        //   src: path.resolve('src/public/icon.ios.png'),
-        //   sizes: [180],
-        //   destination: path.join('icons', 'ios'),
-        //   purpose: 'maskable',
-        //   ios: true,
-        // },
-        // {
-        //   src: path.resolve('src/public/icon.png'),
-        //   sizes: [72, 96, 128, 152, 192, 384], // multiple sizes
-        //   destination: 'icons',
-        //   purpose: 'maskable',
-        // },
-        // {
-        //   src: path.resolve('src/public/icon.png'),
-        //   sizes: [144, 512], // multiple sizes
-        //   destination: 'icons',
-        //   purpose: 'any',
-        // },
+        {
+          src: path.resolve('src/public/icon.png'),
+          sizes: [180],
+          destination: path.join('icons', 'ios'),
+          purpose: 'maskable',
+          ios: true,
+        },
+        {
+          src: path.resolve('src/public/icon-circle.png'),
+          sizes: [72, 96, 128, 152, 192, 384], // multiple sizes
+          destination: 'icons',
+          purpose: 'maskable',
+        },
+        {
+          src: path.resolve('src/public/icon-circle.png'),
+          sizes: [144, 512], // multiple sizes
+          destination: 'icons',
+          purpose: 'any',
+        },
       ],
     }),
     new GenerateSW({
@@ -124,10 +116,19 @@ module.exports = merge(common, {
         /\.map$/,
         /\.LICENSE.txt$/,
       ],
-      runtimeCaching: [],
+      runtimeCaching: [
+        {
+          urlPattern: /https:\/\/fontbit.io\/css2\//,
+          handler: 'StaleWhileRevalidate',
+        },
+        {
+          urlPattern: /https:\/\/unpkg.com\//,
+          handler: 'StaleWhileRevalidate',
+        },
+      ],
     }),
     new BundleAnalyzerPlugin({
-      // analyzerMode: 'disabled',
+      analyzerMode: 'disabled',
       // generateStatsFile: true,
       // statsOptions: { source: false },
     }),
