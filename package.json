@@ -67,6 +67,7 @@
     "workbox-webpack-plugin": "^6.5.4"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@supabase/supabase-js": "^2.1.1",
     "@turf/center": "^6.5.0",
     "@turf/circle": "^6.5.0",

@@ -1,9 +1,11 @@
-import circle from '@turf/circle';
 import Mapbox from 'mapbox-gl';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import config from '../../config/app.config';
 import { service } from '../../sdk';
 import toastHelpers from '../../utils/toast.helpers';
 import { createPageHeader } from '../templates/creator.template';
+
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 class UserLocationView {
   renderHeader() {
@@ -48,6 +50,13 @@ class UserLocationView {
           zoom: 16,
         });
 
+        const geocoder = new MapboxGeocoder({
+          accessToken: Mapbox.accessToken,
+          countries: 'id',
+          mapboxgl: Mapbox,
+        });
+
+        this.map.addControl(geocoder, 'top-left');
         this.map.addControl(
           new Mapbox.NavigationControl(),
         );
@@ -59,6 +68,7 @@ class UserLocationView {
             trackUserLocation: true,
           }),
         );
+        this.map.addControl(new Mapbox.FullscreenControl());
 
         const icon = document.createElement('iconify-icon');
         icon.setAttribute('icon', 'mdi:map-marker');
