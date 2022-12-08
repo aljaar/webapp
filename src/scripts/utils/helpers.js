@@ -103,3 +103,11 @@ export const compareObjects = (originalObject, updatedObject) => {
   // return the result array
   return result;
 };
+
+export const redirect = (path = '/#/') => {
+  if (window.location.hash === path || window.location.hash === path.slice(1)) {
+    window.refreshRender();
+  } else {
+    window.location.hash = (path.startsWith('/')) ? path.slice(1) : path;
+  }
+};

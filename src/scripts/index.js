@@ -20,6 +20,10 @@ const app = new App({
   alpine: Alpine,
 });
 
+window.refreshRender = () => {
+  app.renderPage();
+};
+
 window.addEventListener('hashchange', () => {
   app.renderPage();
 });
