@@ -1,7 +1,7 @@
 export const createHomeHeader = () => String.raw`
   <div class="flex items-center gap-4">
     <a href="" class="header-logo">
-      <img src="leaf-white.png" class="w-9 ml-4 rounded-full alt="">
+      <img src="leaf-white-small.webp" class="w-9 ml-4 rounded-full alt="">
     </a>
     <h1 class="text-xl font-semibold text-white">Aljaar</h1>  
   </div>
