@@ -17,13 +17,13 @@ class HomeView {
         </template>
 
         <!-- Search -->
-        <form>   
+        <form @submit.prevent="filter.search = $refs.input_search.value">   
           <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Search</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <iconify-icon icon="heroicons-solid:search" class="text-gray-500"></iconify-icon>
             </div>
-            <input type="search" id="default-search" @keydown.enter="filter.search = $event.target.value" class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500" placeholder="Cari">
+            <input x-ref="input_search" type="search" id="default-search" class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500" placeholder="Cari">
           </div>
         </form>
 
@@ -158,7 +158,8 @@ class HomeView {
           await this.permissionCheck();
           await this.fetchProducts();
 
-          this.$watch('filter', () => {
+          this.$watch('filter', (value) => {
+            console.log(value)
             this.fetchProducts().catch(console.error);
           });
           this.getNeighborCount().catch();
