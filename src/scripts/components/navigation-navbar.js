@@ -28,9 +28,9 @@ class NavigationNavbar extends HTMLElement {
     const route = this.states.find((item) => item.id === element.id.replace('navbar-', ''));
     console.log(route);
     if (!route) {
-      window.location.href = '/#/';
+      window.location.hash = '#/';
     } else {
-      window.location.href = `/#${route.route}`;
+      window.location.hash = `#${route.route}`;
     }
 
     this.initializeActiveClassState();
