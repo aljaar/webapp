@@ -565,7 +565,7 @@ function Aljaar({ supabase }) {
         return wrapper(() => supabase.rpc('response_transactions', {
           tx_id: id,
           response: 'rejected',
-          reason,
+          reason_txt: reason,
         }));
       },
       review(id, { rating, comment }) {
