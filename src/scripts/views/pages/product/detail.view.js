@@ -211,7 +211,7 @@ class ProductDetailView {
 
           this.isOwner = (this.product.user_id === user.id);
 
-          if (this.isOwner && this.product.status === 'listing') {
+          if (this.isOwner && this.product.status === 'listed') {
             const editButton = document.querySelector('#edit-product');
             const deleteButton = document.querySelector('#delete-product');
 
