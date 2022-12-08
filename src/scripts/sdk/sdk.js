@@ -157,7 +157,7 @@ function Aljaar({ supabase }) {
       },
       async profile(id) {
         if (id === states.user.profile.id) {
-          window.location = '/#/profile';
+          redirect('#/profile');
         }
 
         const { data: profile } = await supabase.from('profiles')
@@ -277,7 +277,7 @@ function Aljaar({ supabase }) {
           })),
           wrapper(() => supabase
             .from('profiles')
-            .select('full_name, avatar_url, phone, rating')
+            .select('id, full_name, avatar_url, phone, rating')
             .eq('user_id', product.user_id)),
         ]);
 
