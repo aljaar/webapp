@@ -1,5 +1,5 @@
 import { service } from '../../../sdk';
-import { delay } from '../../../utils/helpers';
+import { delay, redirect } from '../../../utils/helpers';
 import toastHelpers from '../../../utils/toast.helpers';
 import { createPageHeader } from '../../templates/creator.template';
 
@@ -85,6 +85,7 @@ class SignUpView {
         repeat_password: '',
       },
       async signUp() {
+        const loading = toastHelpers.loading();
         const { error } = await service.auth.signUp({
           full_name: this.credential.full_name,
           email: this.credential.email,
@@ -93,6 +94,7 @@ class SignUpView {
           repeat_password: this.credential.repeat_password,
         });
 
+        toastHelpers.dismiss(loading);
         if (error) {
           toastHelpers.error('Whopss, daftar gagal.');
         } else {
@@ -104,11 +106,11 @@ class SignUpView {
             email: this.credential.email,
           }));
 
-          window.location.href = '/#/signin';
+          redirect('#/signin');
         }
       },
       async signUpWithGoogle() {
-        const { data, error } = await service.auth.signInWith({
+        await service.auth.signInWith({
           type: 'google',
         });
       },

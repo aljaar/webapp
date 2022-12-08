@@ -3,7 +3,7 @@ import products from '../components/alpine/products';
 import NavigationNavbar from '../components/navigation-navbar';
 import routes from '../routes/routes';
 import { service } from '../sdk';
-import { delay } from '../utils/helpers';
+import { delay, redirect } from '../utils/helpers';
 import LoadingIndicator from '../utils/loading';
 import toastHelpers from '../utils/toast.helpers';
 import UrlParser from '../utils/url.parser';
@@ -35,7 +35,7 @@ class App {
         toastHelpers.success('Logout berhasil');
         await delay(500);
         toastHelpers.dismiss(loading);
-        window.location.href = '/#/';
+        window.location.hash = '#/signin';
       },
     }));
 
@@ -86,7 +86,7 @@ class App {
     if (!session) {
       if (!url.includes('/sign')) {
         toastHelpers.error('You need to login first');
-        window.location.href = '/#/signin';
+        redirect('#/signin');
         throw new Error('unauthorized');
       }
     } else {

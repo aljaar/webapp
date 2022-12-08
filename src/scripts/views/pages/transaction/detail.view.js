@@ -1,6 +1,6 @@
 import { service } from '../../../sdk';
 import { format } from '../../../utils/date';
-import { delay } from '../../../utils/helpers';
+import { delay, redirect } from '../../../utils/helpers';
 import toastHelpers from '../../../utils/toast.helpers';
 import UrlParser from '../../../utils/url.parser';
 import { createEmptyResultTemplate, createPageHeader } from '../../templates/creator.template';
@@ -38,9 +38,6 @@ class TransactionDetailView {
                 <h4 class="text-emerald-600 font-semibold" x-text="(isRequest) ? 'Requester' : 'Owner'">-</h4>
                 <span class="space-x-2">
                   <a x-bind:href="'/#/profile/' + transaction.profile.id" x-text="transaction.profile.full_name"></a>
-                  <a href="">
-                    <iconify-icon class="text-base text-green-600" icon="ri:whatsapp-line" inline></iconify-icon>
-                  </a>
                 </span>
               </div>
               <div class="pt-2 flex justify-between text-sm">
@@ -300,7 +297,7 @@ class TransactionDetailView {
             }
 
             await delay(300);
-            window.location = '/#/transactions';
+            redirect('#/transactions');
             break;
           }
           default:
@@ -342,7 +339,7 @@ class TransactionDetailView {
             }
 
             await delay(300);
-            window.location = '/#/transactions';
+            redirect('#/transactions');
             break;
           }
           default:
@@ -353,14 +350,26 @@ class TransactionDetailView {
         if (this.rating <= 0 && this.rating > 5) {
           toastHelpers.error('Whopss, kamu belum memasukan bintang.');
         }
+
         const loading = toastHelpers.loading();
-        const { data } = await service.transaction.review(id, {
+        const { data: success } = await service.transaction.review(id, {
           rating: this.rating,
           comment: this.comment,
         });
 
+        await delay(300);
         toastHelpers.dismiss(loading);
-        console.log(data);
+
+        if (!success) {
+          toastHelpers.error('Whopss, gagal mengirim review.');
+        } else {
+          toastHelpers.success('Review berhasil dikirim.');
+          if (this.isRequest) {
+            redirect(`#/request/${id}`);
+          } else {
+            redirect(`#/transactions/${id}`);
+          }
+        }
       },
       useStatusClass(status) {
         return {

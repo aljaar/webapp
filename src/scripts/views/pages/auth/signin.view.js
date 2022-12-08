@@ -1,5 +1,5 @@
 import { service } from '../../../sdk';
-import { delay } from '../../../utils/helpers';
+import { delay, redirect } from '../../../utils/helpers';
 import toastHelpers from '../../../utils/toast.helpers';
 import { createPageHeader } from '../../templates/creator.template';
 
@@ -90,14 +90,15 @@ class SignInView {
         }
       },
       async signIn() {
-        const { data, error } = await service.auth.signInWith({
+        const loading = toastHelpers.loading();
+        const { error } = await service.auth.signInWith({
           type: 'email',
           credential: {
             email: this.credential.email,
             password: this.credential.password,
           },
         });
-
+        toastHelpers.dismiss(loading);
         if (error) {
           toastHelpers.error('Whopss, login gagal.');
         } else {
@@ -105,11 +106,11 @@ class SignInView {
 
           await delay(1000);
 
-          window.location.href = '/#/';
+          redirect('#/');
         }
       },
       async signInWithGoogle() {
-        const { data, error } = await service.auth.signInWith({
+        await service.auth.signInWith({
           type: 'google',
         });
       },
