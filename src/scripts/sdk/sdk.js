@@ -388,9 +388,12 @@ function Aljaar({ supabase }) {
         }
       },
       async delete(id) {
-        return wrapper(() => supabase.rpc('delete_product', {
-          p_id: id,
-        }));
+        // return wrapper(() => supabase.rpc('delete_product', {
+        //   p_id: id,
+        // }));
+        return wrapper(() => supabase.from('products').update({
+          status: 'deleted',
+        }).eq('id', id).eq('user_id', states.user.id));
       },
       async like(id) {
         return wrapper(() => supabase.rpc('like_product', {
