@@ -44,7 +44,7 @@ export const createProduct = () => String.raw`
       </a>
       <div class="flex gap-2 text-xs items-center">
         <img x-bind:data-src="item.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload rounded-full w-4" alt="">
-        <span class="font-medium" x-text="item.profile.full_name"></span>
+        <span class="font-medium w-[200px] truncate" x-text="item.profile.full_name"></span>
       </div>
       <div class="flex gap-2 text-gray-700">
         <div class="flex gap-2 text-xs items-center">
