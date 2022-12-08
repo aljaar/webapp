@@ -5,8 +5,6 @@ import { service } from '../../sdk';
 import toastHelpers from '../../utils/toast.helpers';
 import { createPageHeader } from '../templates/creator.template';
 
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-
 class UserLocationView {
   renderHeader() {
     return createPageHeader({
