@@ -22,8 +22,8 @@ export const product = (data) => {
     qty: joi.number().label('QTY').required(),
     tags: joi.array().items(joi.number()).min(1).label('Tags')
       .required(),
-    drop_point: joi.array().items(joi.number()).label('Pick Up Point').required(),
-    drop_time: joi.array().items(joi.string()).label('Pick Up Time').required(),
+    drop_point: joi.array().items(joi.number().label('Titik Lokasi Penjemputan')).label('Titik Lokasi Penjemputan').required(),
+    drop_time: joi.array().items(joi.string().label('Waktu Ambil')).label('Waktu Ambil').required(),
     images: joi.array().items(joi.string()).min(1).label('Images')
       .required(),
     used_since: joi.when('category', {
@@ -46,8 +46,6 @@ export const editProduct = (data) => {
     category: joi.string().valid('food', 'non-food').label('Category').optional(),
     qty: joi.number().label('QTY').optional(),
     tags: joi.array().items(joi.number()).label('Tags').optional(),
-    drop_point: joi.array().items(joi.number()).label('Pick Up Point').optional(),
-    drop_time: joi.array().items(joi.string()).label('Pick Up Time').optional(),
     images: joi.array().items(joi.string()).label('Images').optional(),
     used_since: joi.when('category', {
       is: joi.string().valid('non-food').required(),
