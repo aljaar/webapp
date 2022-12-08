@@ -27,13 +27,13 @@ export const createProduct = () => String.raw`
       <img class="lazypreload lazyload w-32 h-24 object-cover rounded bg-green-50 border border-green-600" src="images/loading.gif" x-bind:data-src="image(item.image)" x-bind:alt="item.title">
     
       <template x-if="item.qty === 0">
-        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/40 flex items-center justify-center">
           <span class="text-white">Kosong</span>
         </div>
       </template>
 
       <template x-if="isExpired(item)">
-        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/80 flex items-center justify-center">
+        <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/60 flex items-center justify-center">
           <span class="text-white">Expired</span>
         </div>
       </template>
