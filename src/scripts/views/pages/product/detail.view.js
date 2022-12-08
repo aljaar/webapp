@@ -1,6 +1,6 @@
 import { service } from '../../../sdk';
 import { fromNow, isExpired } from '../../../utils/date';
-import { delay } from '../../../utils/helpers';
+import { delay, redirect } from '../../../utils/helpers';
 import toastHelpers from '../../../utils/toast.helpers';
 import UrlParser from '../../../utils/url.parser';
 import { createPageHeader } from '../../templates/creator.template';
@@ -14,6 +14,12 @@ class ProductDetailView {
           <a id="edit-product" class="hidden cursor-pointer font-medium px-3 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
             <iconify-icon icon="mdi:file-edit-outline" inline></iconify-icon>
             Ubah
+          </a>
+        `,
+        String.raw`
+          <a id="delete-product" class="hidden cursor-pointer font-medium px-3 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
+            <iconify-icon icon="mdi:trash-can-outline" inline></iconify-icon>
+            Delete
           </a>
         `,
       ],
@@ -54,6 +60,14 @@ class ProductDetailView {
                   <span x-text="product.view"></span>
                 </div>
               </div>
+
+              <template x-if="product.status === 'deleted'">
+                <div class="absolute top-3 left-3 flex flex-col gap-2">
+                  <div class="flex items-center gap-2 text-sm rounded-md bg-red-600 text-white py-2 px-4">
+                    DIHAPUS
+                  </div>
+                </div>
+              </template>
             </div>
             <!-- Judul -->
             <h3 x-text="createTitle(product.title)" class="text-2xl font-semibold"></h3>
@@ -96,12 +110,10 @@ class ProductDetailView {
                 <h4 class="text-emerald-600 font-medium">Waktu Ambil</h4>
                 <span x-text="product.drop_time.join(', ')"></span>
               </div>
-              <template x-if="(isOwner)">
-                <div class="pt-2 flex justify-between">
-                  <h4 class="text-emerald-600 font-medium">Telah dibagikan</h4>
-                  <span><b x-text="product.transaction.length"></b> orang</span>
-                </div>
-              </template>
+              <div class="pt-2 flex justify-between">
+                <h4 class="text-emerald-600 font-medium">Telah dibagikan</h4>
+                <span><b x-text="(isOwner) ? product.transaction.length : product.transaction"></b> orang</span>
+              </div>
               <div></div>
             </div>
 
@@ -111,7 +123,7 @@ class ProductDetailView {
                 <div class="flex items-center gap-2 my-4">
                   <img x-bind:data-src="product.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload w-8 h-8 rounded-full" alt="">
                   <div class="flex flex-col flex-1">
-                    <span x-text="product.profile.full_name"></span>
+                    <a class="font-medium" :href="'/#/profile/' + product.profile.id" x-text="product.profile.full_name"></a>
                   </div>
 
                   <!-- Button Contact WA -->
@@ -125,7 +137,7 @@ class ProductDetailView {
 
                 <div class="flex gap-3">
                   <!-- Button Request -->
-                  <button @click="createRequest" class="w-full py-3 text-white bg-emerald-600 rounded-md shadow" :class="{'bg-green-600': isRequestable(), 'bg-gray-700': !isRequestable()}" :disabled="!isRequestable()">
+                  <button @click="createRequest" class="w-full py-3 rounded-md shadow" :class="{'bg-green-600 text-white': isRequestable(), 'bg-gray-300 text-gray-800': !isRequestable()}" :disabled="!isRequestable()">
                     Buat Permintaan
                   </button>
                 </div>
@@ -159,6 +171,22 @@ class ProductDetailView {
             </template>
           </div>
         </template>
+
+        <div class="sheet-modal with-overlay" x-bind:class="{'active': deleteConfirm}">
+          <div class="bg-white border-t rounded-lg p-4 border-t-gray-200 w-full h-[200px] space-y-2">
+            <h3 class="text-gray-900 font-semibold text-2xl">Apakah anda yakin akan menghapus produk ini?</h3>
+            <p class="text-gray-700">Produk yang kamu hapus tidak dapat dikembalikan kembali.</p>
+
+            <div class="flex gap-3">
+              <button @click="deleteProduct(true)" class="w-full py-2 text-white bg-green-600 hover:bg-green-700 rounded-md">
+                <span>Hapus</span>
+              </button>
+              <button @click="deleteProduct(false)" class="w-full py-2 text-white bg-pink-600 hover:bg-pink-700 rounded-md">
+                <span>Batal</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -171,6 +199,7 @@ class ProductDetailView {
       product: null,
       isLoading: true,
       isOwner: false,
+      deleteConfirm: false,
       async init() {
         try {
           const product = await service.product.detail(id);
@@ -182,11 +211,17 @@ class ProductDetailView {
 
           this.isOwner = (this.product.user_id === user.id);
 
-          if (this.isOwner) {
+          if (this.isOwner && this.product.status === 'listing') {
             const editButton = document.querySelector('#edit-product');
+            const deleteButton = document.querySelector('#delete-product');
 
             editButton.classList.remove('hidden');
             editButton.setAttribute('href', `/#/product-edit/${this.product.id}`);
+
+            deleteButton.classList.remove('hidden');
+            deleteButton.addEventListener('click', () => {
+              this.deleteConfirm = !this.deleteConfirm;
+            });
           }
         } catch (err) {
           toastHelpers.error('Opps, informasi detail untuk produk ini gagal dimuat.');
@@ -197,11 +232,31 @@ class ProductDetailView {
         const loading = toastHelpers.loading();
         const { data: result } = await service.transaction.request(id);
 
-        toastHelpers.dismiss(loading);
         if (result && result.includes('Whopss')) {
           toastHelpers.error(result);
         } else if (result && !result.includes('Whopss')) {
-          toastHelpers.success(result);
+          const [txId, message] = result.split(':');
+          toastHelpers.success(message);
+          redirect(`#/transactions/${txId}`);
+        }
+
+        toastHelpers.dismiss(loading);
+      },
+      async deleteProduct(confirm = false) {
+        this.deleteConfirm = false;
+        if (confirm) {
+          const loading = toastHelpers.loading();
+          const result = await service.product.delete(id);
+
+          toastHelpers.dismiss(loading);
+          if (!result.error) {
+            toastHelpers.success('Produk berhasil dihapus.');
+            await delay(300);
+
+            redirect('#/profile');
+          } else {
+            toastHelpers.error('Whopss, produk gagal dihapus.');
+          }
         }
       },
       tagsText(tags = []) {
@@ -211,6 +266,10 @@ class ProductDetailView {
         return fromNow(date);
       },
       createTitle(title) {
+        if (this.product.status === 'deleted') {
+          return `${title} (Dihapus)`;
+        }
+
         if (this.product.qty === 0) {
           return `${title} (Kosong)`;
         }
