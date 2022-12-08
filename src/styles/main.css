@@ -105,12 +105,22 @@ header .header-logo iconify-icon {
   z-index: 2;
   will-change: transform,opacity;
   animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  @apply rounded-t-lg;
 }
 .sheet-modal.active {
   display: block;
   transform: translate3d(0,0,0);
 }
+.sheet-modal.with-overlay {
+  height: calc(100% - 70px);
+  animation: none;
+  @apply bg-black/30 px-3;
+}
+.sheet-modal.with-overlay.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 @keyframes slide-up {
   0% {
     transform: translate3d(0, 100%, 0);
