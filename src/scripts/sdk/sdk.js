@@ -296,7 +296,8 @@ function Aljaar({ supabase }) {
         const { data } = await wrapper(() => supabase
           .from('products')
           .select('*, product_images ( image ), likes (count), product_tags ( tags (id, name) ), product_analytics ( view )')
-          .eq('user_id', states.user?.id));
+          .eq('user_id', states.user?.id)
+          .neq('status', 'deleted'));
 
         const products = data.map((product) => useProduct(product).format(usePublicUrl));
 
