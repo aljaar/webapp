@@ -95,13 +95,13 @@ module.exports = merge(common, {
           ios: true,
         },
         {
-          src: path.resolve('src/public/icon-circle.png'),
+          src: path.resolve('src/public/icon.png'),
           sizes: [72, 96, 128, 152, 192, 384], // multiple sizes
           destination: 'icons',
           purpose: 'maskable',
         },
         {
-          src: path.resolve('src/public/icon-circle.png'),
+          src: path.resolve('src/public/icon.png'),
           sizes: [144, 512], // multiple sizes
           destination: 'icons',
           purpose: 'any',
