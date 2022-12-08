@@ -32,11 +32,11 @@ class NewProductView {
 
         <div>
           <label for="title" class="form-control-label">Title</label>
-          <input type="text" id="title" class="form-control" x-model="data.title">
+          <input type="text" id="title" name="title" class="form-control" x-model="data.title">
         </div>
         <div>
           <label for="description" class="form-control-label">Description</label>
-          <textarea id="description" class="form-control" x-model="data.description"></textarea>
+          <textarea id="description" name="description" class="form-control" x-model="data.description"></textarea>
         </div>
         <div class="category mb-2">
           <form action="">
@@ -57,24 +57,24 @@ class NewProductView {
           <template x-if="data.category === 'food'">
             <div>
               <h2 class="form-control-label">Expired Date</h2>
-              <input type="date" class="form-control" x-model="data.expired_at">
+              <input type="date" name="expired_at" class="form-control" x-model="data.expired_at">
             </div>
           </template>
           <template x-if="data.category === 'non-food'">
             <div>
               <h2 class="form-control-label">Used Since</h2>
-              <input type="text" class="form-control" placeholder="Berapa lama barang dipakai atau kapan belinya" x-model="data.used_since">
+              <input type="text" name="used_since" class="form-control" placeholder="Berapa lama barang dipakai atau kapan belinya" x-model="data.used_since">
             </div>
           </template>
   
           <div>
             <label for="qty" class="form-control-label">Qty</label>
-            <input type="number" id="qty" class="form-control" placeholder="Jumlah yang tersedia" x-model="data.qty">
+            <input type="number" id="qty" name="qty" class="form-control" placeholder="Jumlah yang tersedia" x-model="data.qty">
           </div>
         </div>
         <div>
           <label for="tags" class="form-control-label">Tag</label>
-          <select id="tags" class="form-control" multiple></select>
+          <select id="tags" class="form-control" name="tags" multiple></select>
         </div>
         <div>
           <div class="flex items-end justify-between">
@@ -160,17 +160,18 @@ class NewProductView {
         });
       },
       initializeMaps() {
-        console.log(user.location);
         this.map = new Mapbox.Map({
           container: 'map',
           style: 'mapbox://styles/mapbox/streets-v12',
           center: [user.location.lon, user.location.lat],
-          zoom: 16,
+          zoom: 18,
+          cooperativeGestures: true,
         });
 
         this.data.drop_point = [user.location.lat, user.location.lon];
 
         this.map.addControl(new Mapbox.NavigationControl(), 'top-left');
+        this.map.addControl(new Mapbox.FullscreenControl());
         this.map.addControl(
           new Mapbox.GeolocateControl({
             positionOptions: {
@@ -201,6 +202,7 @@ class NewProductView {
         const result = await service.product.create({
           data: {
             ...data,
+            qty: parseInt(data.qty, 10),
             tags,
           },
           images: files,
@@ -211,6 +213,12 @@ class NewProductView {
           toastHelpers.error('Whops, ada kesalahan.');
         } else {
           toastHelpers.success('Item berhasil disimpan');
+
+          if (result.data) {
+            const [product] = result.data;
+
+            window.location.hash = `#/product/${product.id}`;
+          }
         }
 
         toastHelpers.dismiss(loading);
