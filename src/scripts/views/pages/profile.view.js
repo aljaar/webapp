@@ -42,7 +42,7 @@ class ProfileView {
 
           <div class="mb-6">
             <label for="about" class="form-control-label">About</label>
-            <p class="leading-6 text-sm text-gray-700 break-all" x-text="user.profile.description"></p>
+            <p class="leading-6 text-sm text-gray-700 break-all" x-text="user.profile.description || '-'"></p>
           </div>
 
           <div class="flex flex-col gap-2">
