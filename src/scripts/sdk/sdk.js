@@ -284,9 +284,11 @@ function Aljaar({ supabase }) {
         product.profile = profile.data;
         product.transaction = transaction.data;
 
-        supabase.rpc('increment_view', {
-          p_id: id,
-        }).then(console.info);
+        if (product.user_id !== states.user.id) {
+          supabase.rpc('increment_view', {
+            p_id: id,
+          }).then(console.info);
+        }
 
         return useProduct(product).format(usePublicUrl);
       },
