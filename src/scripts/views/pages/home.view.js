@@ -154,6 +154,7 @@ class HomeView {
       },
       neighbor_count: 0,
       async init() {
+        console.log('reinit');
         try {
           await this.permissionCheck();
           await this.fetchProducts();
@@ -185,6 +186,9 @@ class HomeView {
         if (!navigator.geolocation) {
           throw new Error('Whopss, fitur GeoLocation tidak bisa digunakan di browser ini.');
         }
+
+        if (user.location && user.profile.address) return;
+        console.log('location check')
 
         navigator.geolocation.getCurrentPosition(async () => {
           this.permission.location = true;
