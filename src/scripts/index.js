@@ -2,6 +2,7 @@ import 'lazysizes';
 import 'iconify-icon';
 import 'regenerator-runtime';
 import 'lazysizes/plugins/parent-fit/ls.parent-fit';
+import 'lazysizes/plugins/attrchange/ls.attrchange';
 
 import '../styles/tailwind.css';
 import '../styles/main.css';

@@ -34,48 +34,51 @@ class MapsView {
           </button>
         </div>
 
-        <template x-if="product">
-          <section id="product" class="absolute w-[calc(100%-1.5em)] text-center z-10 bottom-12 left-3">
-            <div class="flex items-center rounded-lg bg-white shadow-mdl h-24 gap-2">
-              <div class="relative">
-                <img id="product_image" class="lazyload lazypreload w-32 h-24 object-cover rounded" x-bind:data-src="image(product.image)" src="images/loading.gif" x-bind:alt="product.title">
-              
-                <template x-if="product.qty === 0">
-                  <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/40 flex items-center justify-center">
-                    <span class="text-white">Kosong</span>
-                  </div>
-                </template>
+        <template x-if="products.length >= 0">
+            
+          <section id="product" class="absolute w-[calc(100%-1.5em)] text-center z-10 bottom-12 left-3 flex flex-col gap-2">
+            <template x-for="product in products" :key="product.product_id">
+              <div class="flex items-center rounded-lg bg-white shadow-mdl h-24 gap-2">
+                <div class="relative">
+                  <img class="product-image lazyload lazypreload w-32 h-24 object-cover rounded" x-bind:data-src="image(product.image)" src="images/loading.gif" x-bind:alt="product.title">
                 
-                <template x-if="isExpired(product)">
-                  <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/40 flex items-center justify-center">
-                    <span class="text-white">Expired</span>
-                  </div>
-                </template>
-              </div>
-              <div class="h-24 flex flex-col flex-1 justify-between py-1 text-left">
-                <a x-bind:href="'/#/product/' + product.product_id">
-                  <h3 x-text="product.title" class="font-semibold"></h3>
-                </a>
-                <div class="flex gap-2 text-xs items-center">
-                  <img x-bind:data-src="product.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload rounded-full w-4" alt="">
-                  <span class="truncate" x-text="product.profile.full_name"></span>
+                  <template x-if="product.qty === 0">
+                    <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/40 flex items-center justify-center">
+                      <span class="text-white">Kosong</span>
+                    </div>
+                  </template>
+                  
+                  <template x-if="isExpired(product)">
+                    <div class="absolute top-0 left-0 w-32 h-24 rounded bg-black/40 flex items-center justify-center">
+                      <span class="text-white">Expired</span>
+                    </div>
+                  </template>
                 </div>
-                <div class="flex gap-4">
+                <div class="h-24 flex flex-col flex-1 justify-between py-1 text-left">
+                  <a x-bind:href="'/#/product/' + product.product_id">
+                    <h3 x-text="product.title" class="font-semibold"></h3>
+                  </a>
                   <div class="flex gap-2 text-xs items-center">
-                    <iconify-icon icon="ri:map-pin-2-line"></iconify-icon>
-                    <span x-text="(product.distance).toFixed(2) + 'm'"></span>
+                    <img x-bind:data-src="product.profile.avatar_url" referrerpolicy="no-referrer" class="lazyload rounded-full w-4" alt="">
+                    <span class="truncate" x-text="product.profile.full_name"></span>
                   </div>
-                  <div class="flex gap-2 text-xs items-center">
-                    <iconify-icon icon="ri:eye-line"></iconify-icon>
-                    <span x-text="product.view"></span>
+                  <div class="flex gap-4">
+                    <div class="flex gap-2 text-xs items-center">
+                      <iconify-icon icon="ri:map-pin-2-line"></iconify-icon>
+                      <span x-text="(product.distance).toFixed(2) + 'm'"></span>
+                    </div>
+                    <div class="flex gap-2 text-xs items-center">
+                      <iconify-icon icon="ri:eye-line"></iconify-icon>
+                      <span x-text="product.view"></span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <a x-bind:href="'/#/product/' + product.product_id" class="flex items-center justify-center rounded-full hover:bg-gray-100 w-12 h-12">
-                <iconify-icon icon="heroicons-outline:arrow-right" inline></iconify-icon>
-              </a>
-            </div>
+                <a x-bind:href="'/#/product/' + product.product_id" class="flex items-center justify-center rounded-full hover:bg-gray-100 w-12 h-12">
+                  <iconify-icon icon="heroicons-outline:arrow-right" inline></iconify-icon>
+                </a>
+              </div>
+            </template>
           </section>
         </template>
       </div>
@@ -114,7 +117,7 @@ class MapsView {
     alpine.data('maps', () => ({
       map: null,
       geolocate: null,
-      product: null,
+      products: [],
       async init() {
         this.map = new Mapbox.Map({
           container: 'map',
@@ -257,15 +260,12 @@ class MapsView {
             }
 
             // console.log(e.features[0].properties, coordinates);
-
-            this.product = e.features[0].properties;
-            this.product.profile = JSON.parse(this.product.profile);
-
-            const productImage = document.querySelector('#product_image');
-            if (productImage && !productImage.classList.contains('lazyload')) {
-              productImage.classList.add('lazyload');
-              productImage.setAttribute('src', 'images/loading.gif');
-            }
+            const selectedProduct = e.features[0].properties;
+            this.products = points.features
+              .filter(({ properties: { lat, lon } }) => (
+                lat === selectedProduct.lat && lon === selectedProduct.lon
+              ))
+              .map(({ properties: product }) => product);
           });
         });
       },
