@@ -51,24 +51,41 @@ class ProductDetailView {
 
         <template x-if="product">
           <div class="flex flex-col gap-2 text-gray-800">
-            <div class="relative">
-              <img x-bind:data-src="product.images[0]" class="lazyload lazypreload rounded-md h-64 w-full object-cover border border-green-600" src="images/loading.gif" x-bind:alt="product.title">
+            <div class="relative flex flex-col gap-1">
+              <div class="relative">
+                <img x-bind:data-src="slideImage()" class="lazyload lazypreload rounded-md h-64 w-full object-cover border border-green-600" src="images/loading.gif" x-bind:alt="product.title">
 
-              <div class="absolute top-3 right-3 flex flex-col gap-2">
-                <div class="flex items-center gap-2 text-sm rounded-md bg-black/60 text-white py-2 px-4">
-                  <iconify-icon icon="heroicons-outline:eye" inline></iconify-icon>
-                  <span x-text="product.view"></span>
-                </div>
-              </div>
-
-              <template x-if="product.status === 'deleted'">
-                <div class="absolute top-3 left-3 flex flex-col gap-2">
-                  <div class="flex items-center gap-2 text-sm rounded-md bg-red-600 text-white py-2 px-4">
-                    DIHAPUS
+                <div class="absolute top-3 right-3 flex flex-col gap-2">
+                  <div class="flex items-center gap-2 text-sm rounded-md bg-black/60 text-white py-2 px-4">
+                    <iconify-icon icon="heroicons-outline:eye" inline></iconify-icon>
+                    <span x-text="product.view"></span>
                   </div>
                 </div>
-              </template>
+
+                <div @click="slidePrev" x-show="product.images.length > 1" class="absolute top-0 left-2 h-full justify-center flex flex-col gap-2">
+                  <iconify-icon class="text-2xl p-1 bg-gray-100 rounded-full" icon="mdi:skip-previous-circle" inline></iconify-icon>
+                </div>
+
+                <div @click="slideNext" x-show="product.images.length > 1" class="absolute top-0 right-2 h-full justify-center flex flex-col gap-2">
+                  <iconify-icon class="text-2xl p-1 bg-gray-100 rounded-full" icon="mdi:skip-next-circle" inline></iconify-icon>
+                </div>
+
+                <template x-if="product.status === 'deleted'">
+                  <div class="absolute top-3 left-3 flex flex-col gap-2">
+                    <div class="flex items-center gap-2 text-sm rounded-md bg-red-600 text-white py-2 px-4">
+                      DIHAPUS
+                    </div>
+                  </div>
+                </template>
+              </div>
+
+              <div class="flex gap-2">
+                <template x-for="(item, index) in product.images">
+                  <div class="h-1 w-full rounded-lg" :class="{'bg-green-600': slideActive === index, 'bg-gray-300': slideActive !== index}"></div>
+                </template>
+              </div>
             </div>
+
             <!-- Judul -->
             <h3 x-text="createTitle(product.title)" class="text-2xl font-semibold"></h3>
             <!-- Tanggal -->
@@ -204,11 +221,9 @@ class ProductDetailView {
         try {
           const product = await service.product.detail(id);
           await delay(500);
-          console.log(product);
 
           this.product = product;
           this.isLoading = false;
-
           this.isOwner = (this.product.user_id === user.id);
 
           if (this.isOwner && this.product.status === 'listed') {
@@ -224,6 +239,7 @@ class ProductDetailView {
             });
           }
         } catch (err) {
+          console.log(err);
           toastHelpers.error('Opps, informasi detail untuk produk ini gagal dimuat.');
           this.isLoading = false;
         }
@@ -258,6 +274,20 @@ class ProductDetailView {
             toastHelpers.error('Whopss, produk gagal dihapus.');
           }
         }
+      },
+      slideActive: 0,
+      slideImage() {
+        if (this.product.images.length === 0) return 'images/loading.gif';
+
+        return this.product.images[this.slideActive];
+      },
+      slideNext() {
+        this.slideActive = (this.slideActive === (this.product.images.length - 1))
+          ? 0 : this.slideActive + 1;
+      },
+      slidePrev() {
+        this.slideActive = (this.slideActive === 0)
+          ? (this.product.images.length - 1) : this.slideActive - 1;
       },
       tagsText(tags = []) {
         return tags.map((tag) => tag.name).join(', ');
