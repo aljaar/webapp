@@ -29,9 +29,7 @@ function Aljaar({ supabase }) {
   supabase.auth.onAuthStateChange((event, session) => {
     states.auth_state = event;
 
-    if (session) {
-      console.info('Session Refreshed');
-    } else {
+    if (!session) {
       states.session = null;
       states.user = null;
     }
@@ -215,13 +213,6 @@ function Aljaar({ supabase }) {
           radius: 200,
         }));
       },
-      async getNeighborProducts() {
-        const { data: count, error } = await supabase.rpc('get_neighbor_products', {
-          radius: 200,
-        });
-
-        console.log(count, error);
-      },
       async listedProductCount() {
         const { data: stats, error } = await supabase.rpc('product_stats');
 
@@ -285,9 +276,9 @@ function Aljaar({ supabase }) {
         product.transaction = transaction.data;
 
         if (product.user_id !== states.user.id) {
-          supabase.rpc('increment_view', {
+          wrapper(() => supabase.rpc('increment_view', {
             p_id: id,
-          }).then(console.info);
+          })).catch(console.info);
         }
 
         return useProduct(product).format(usePublicUrl);
@@ -304,7 +295,6 @@ function Aljaar({ supabase }) {
         return products;
       },
       async create({ data, images }) {
-        console.log(data);
         // Image Upload
         const uploadTasks = images.map(async (image) => {
           const ext = image.name.split('.').pop();

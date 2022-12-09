@@ -1,3 +1,4 @@
+import { redirect } from '../utils/helpers';
 import UrlParser from '../utils/url.parser';
 
 class NavigationNavbar extends HTMLElement {
@@ -26,11 +27,10 @@ class NavigationNavbar extends HTMLElement {
 
   onMenuItemClicked(element) {
     const route = this.states.find((item) => item.id === element.id.replace('navbar-', ''));
-    console.log(route);
     if (!route) {
       window.location.hash = '#/';
     } else {
-      window.location.hash = `#${route.route}`;
+      redirect(`#${route.route}`);
     }
 
     this.initializeActiveClassState();

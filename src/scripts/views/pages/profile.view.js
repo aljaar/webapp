@@ -205,7 +205,6 @@ class ProfileView {
       init() {
         const user = service.user.me();
         this.user = user;
-        console.log(user);
 
         Promise.all([
           service.user.getHelpedPeopleCount().then((stat) => {

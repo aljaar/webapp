@@ -81,7 +81,6 @@ class ProfileEditView {
         if (this.avatar) {
           data.avatar = this.avatar;
         }
-        console.log(data);
 
         const loading = toastHelpers.loading();
         const result = await service.user.update(data);

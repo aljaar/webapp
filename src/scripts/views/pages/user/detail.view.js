@@ -62,7 +62,6 @@ class UserDetailView {
       async init() {
         const profile = await service.user.profile(id);
 
-        console.log(profile);
         this.profile = profile;
         this.isLoading = false;
       },

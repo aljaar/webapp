@@ -1,5 +1,3 @@
-import product from '../components/alpine/product';
-import products from '../components/alpine/products';
 import NavigationNavbar from '../components/navigation-navbar';
 import routes from '../routes/routes';
 import { service } from '../sdk';
@@ -25,8 +23,6 @@ class App {
   }
 
   _initialAlpine() {
-    this._alpine.data('product', product);
-    this._alpine.data('products', products);
     this._alpine.data('navbarMenu', () => ({
       async logout() {
         const loading = toastHelpers.loading();
@@ -76,6 +72,7 @@ class App {
 
       await page.afterRender(this._alpine);
     } catch (error) {
+      if (error.message === 'Unauthorized') return;
       this._content.innerHTML = this._renderErrorNotFound(error);
     }
   }
@@ -87,7 +84,7 @@ class App {
       if (!url.includes('/sign')) {
         toastHelpers.error('You need to login first');
         redirect('#/signin');
-        throw new Error('unauthorized');
+        throw new Error('Unauthorized');
       }
     } else {
       if (localStorage.getItem('registered_user')) {
@@ -101,8 +98,6 @@ class App {
         this._user = await service.auth.user();
         loading.stop();
       }
-
-      console.info('passed');
     }
   }
 

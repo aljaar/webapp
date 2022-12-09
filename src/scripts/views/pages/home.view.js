@@ -158,9 +158,10 @@ class HomeView {
           await this.permissionCheck();
           await this.fetchProducts();
 
-          this.$watch('filter', (value) => {
-            console.log(value)
-            this.fetchProducts().catch(console.error);
+          this.$watch('filter', () => {
+            this.fetchProducts().catch(() => {
+              toastHelpers.error('Whops, terdapat kesalahan ketika mengambil data produk.');
+            });
           });
           this.getNeighborCount().catch();
         } catch (error) {
@@ -235,7 +236,6 @@ class HomeView {
         } else {
           this.filter.category = null;
         }
-        console.log(this.filter.category);
       },
       isFilterActive(column, type) {
         if (this.filter.filters.length === 0) return false;
