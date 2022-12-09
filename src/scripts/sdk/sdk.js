@@ -559,7 +559,7 @@ function Aljaar({ supabase }) {
         return wrapper(() => supabase.rpc('response_transactions', {
           tx_id: id,
           response: 'approved',
-          reason_text: '',
+          reason_txt: '',
         }));
       },
       reject(id, reason) {

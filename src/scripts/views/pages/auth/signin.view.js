@@ -104,7 +104,7 @@ class SignInView {
         } else {
           toastHelpers.success('Login berhasil');
 
-          await delay(1000);
+          await delay(300);
 
           redirect('#/');
         }

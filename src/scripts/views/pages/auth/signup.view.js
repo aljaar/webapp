@@ -99,7 +99,7 @@ class SignUpView {
           toastHelpers.error('Whopss, daftar gagal.');
         } else {
           toastHelpers.success('Proses daftar berhasil');
-          await delay(1000);
+          await delay(300);
 
           localStorage.setItem('registered_user', JSON.stringify({
             full_name: this.credential.full_name,
