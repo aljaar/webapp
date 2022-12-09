@@ -150,7 +150,7 @@ class HomeView {
         category: null,
       },
       permission: {
-        location: false,
+        location: true,
       },
       neighbor_count: 0,
       async init() {

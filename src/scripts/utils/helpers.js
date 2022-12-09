@@ -109,5 +109,6 @@ export const redirect = (path = '/#/') => {
     window.refreshRender();
   } else {
     window.location.hash = (path.startsWith('/')) ? path.slice(1) : path;
+    window.refreshRender();
   }
 };

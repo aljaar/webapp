@@ -15,7 +15,7 @@ export const createPageHeader = ({ title, menu, withBack = true }) => String.raw
     <h1 class="text-xl font-semibold">${title}</h1>  
   </div>
   ${(menu) ? String.raw`
-  <div class="flex gap-4 mr-4" x-data="navbarMenu">
+  <div class="flex gap-2 mr-4" x-data="navbarMenu">
     ${menu.join('')}
   </div>
   ` : ''}

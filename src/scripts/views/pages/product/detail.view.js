@@ -11,13 +11,13 @@ class ProductDetailView {
       title: 'Detail Item',
       menu: [
         String.raw`
-          <a id="edit-product" class="hidden cursor-pointer font-medium px-3 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
+          <a id="edit-product" class="hidden cursor-pointer font-medium text-sm px-2 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
             <iconify-icon icon="mdi:file-edit-outline" inline></iconify-icon>
             Ubah
           </a>
         `,
         String.raw`
-          <a id="delete-product" class="hidden cursor-pointer font-medium px-3 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
+          <a id="delete-product" class="hidden cursor-pointer font-medium text-sm px-2 py-1 rounded-md bg-pink-50 border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white">
             <iconify-icon icon="mdi:trash-can-outline" inline></iconify-icon>
             Delete
           </a>
@@ -109,7 +109,7 @@ class ProductDetailView {
               </div>
               <div class="pt-2 flex justify-between">
                 <h4 class="text-emerald-600 font-medium">Tag</h4>
-                <span x-text="tagsText(product.tags)"></span>
+                <span class="text-right" x-text="tagsText(product.tags)"></span>
               </div>
               <template x-if="(product.category == 'food')">
                 <div class="pt-2 flex justify-between">

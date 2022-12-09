@@ -4,6 +4,7 @@ import config from '../../config/app.config';
 import { service } from '../../sdk';
 import toastHelpers from '../../utils/toast.helpers';
 import { createPageHeader } from '../templates/creator.template';
+import { redirect } from '../../utils/helpers';
 
 class UserLocationView {
   renderHeader() {
@@ -29,18 +30,18 @@ class UserLocationView {
 
     const user = service.user.me();
 
-    if (!user.location) {
-      const { data: location } = await service.auth.updateWithCurrentLocation();
-
-      user.location = {
-        lat: location.latitude,
-        lon: location.longitude,
-      };
-    }
-
     alpine.data('currentLocation', () => ({
       map: null,
       async init() {
+        if (!user.location) {
+          const { data: location } = await service.auth.updateWithCurrentLocation();
+
+          user.location = {
+            lat: location.latitude,
+            lon: location.longitude,
+          };
+        }
+
         this.map = new Mapbox.Map({
           container: 'map',
           style: 'mapbox://styles/mapbox/streets-v12',
@@ -86,14 +87,21 @@ class UserLocationView {
           lat: center.lat,
           lng: center.lng,
         });
+        await service.user.getAddress({
+          location: {
+            lat: center.lat,
+            lon: center.lon,
+          },
+          profile: {
+            address: null,
+          },
+        }, true);
         await service.auth.user();
 
-        const update = service.user.me();
-        await service.user.getAddress(update, true);
-
         toastHelpers.dismiss(loading);
-
         toastHelpers.success('Lokasi anda berhasil diupdate.');
+
+        redirect('#/profile');
       },
     }));
   }
