@@ -62,11 +62,11 @@ class ProductDetailView {
                   </div>
                 </div>
 
-                <div @click="slidePrev" x-show="product.images.length > 1" class="absolute top-0 left-2 h-full justify-center flex flex-col gap-2">
+                <div @click="slidePrev" x-show="product.images.length > 1" class="absolute top-0 left-2 h-full justify-center flex flex-col gap-2 cursor-pointer">
                   <iconify-icon class="text-2xl p-1 bg-gray-100 rounded-full" icon="mdi:skip-previous-circle" inline></iconify-icon>
                 </div>
 
-                <div @click="slideNext" x-show="product.images.length > 1" class="absolute top-0 right-2 h-full justify-center flex flex-col gap-2">
+                <div @click="slideNext" x-show="product.images.length > 1" class="absolute top-0 right-2 h-full justify-center flex flex-col gap-2 cursor-pointer">
                   <iconify-icon class="text-2xl p-1 bg-gray-100 rounded-full" icon="mdi:skip-next-circle" inline></iconify-icon>
                 </div>
 
