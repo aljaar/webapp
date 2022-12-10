@@ -90,9 +90,10 @@ class UserLocationView {
         await service.user.getAddress({
           location: {
             lat: center.lat,
-            lon: center.lon,
+            lon: center.lng,
           },
           profile: {
+            id: user.profile.id,
             address: null,
           },
         }, true);
