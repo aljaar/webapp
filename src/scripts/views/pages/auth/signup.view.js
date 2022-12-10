@@ -45,7 +45,7 @@ class SignUpView {
           <template x-if="((credential.repeat_password !== '') && (credential.password !== credential.repeat_password))">
             <p class="text-left text-sm text-red-500">Password tidak cocok!</p>
           </template>
-          <button @click="signUp" class="links w-full rounded-md bg-green-600 shadow-md py-3 font-semibold text-white">
+          <button @click="signUp" class="links w-full rounded-md bg-green-600 shadow-md py-3 font-semibold text-white" aria-label="Sign Up">
             Sign Up
           </button>
         </div>
@@ -58,7 +58,7 @@ class SignUpView {
 
         <footer>
           <button @click="signUpWithGoogle" class="w-full flex relative items-center justify-center flex-none py-2.5 px-2 rounded-md bg-blue-600 text-white shadow-mdl">
-            <span class="absolute left-2 bg-white rounded-md px-2 py-1">
+            <span class="absolute left-2 bg-white rounded-md px-2 py-1" aria-label="Sign Up with Google">
               <iconify-icon icon="logos:google-icon" inline></iconify-icon>
             </span>
             <span>Sign Up with Google</span>

@@ -9,7 +9,7 @@ export const createHomeHeader = () => String.raw`
 
 export const createPageHeader = ({ title, menu, withBack = true }) => String.raw`
   <div x-data="{}" class="flex items-center gap-4">
-    <button x-show="${withBack}" @click="() => history.back()" class="header-logo">
+    <button x-show="${withBack}" @click="() => history.back()" aria-label="Back" class="header-logo">
       <iconify-icon class="text-xl" icon="ri:arrow-left-line" inline></iconify-icon>
     </button>
     <h1 class="text-xl font-semibold">${title}</h1>  

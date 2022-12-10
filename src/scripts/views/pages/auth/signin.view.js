@@ -48,7 +48,7 @@ class SignInView {
             <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot Password?</a>
           </div>
 
-          <button @click="signIn" class="links w-full rounded-md bg-green-600 shadow-md py-3 font-semibold text-white">
+          <button @click="signIn" class="links w-full rounded-md bg-green-600 shadow-md py-3 font-semibold text-white" aria-label="Sign In">
             Sign In
           </button>
         </div>
@@ -60,7 +60,7 @@ class SignInView {
         </div>
 
         <footer>
-          <button @click="signInWithGoogle" class="w-full flex relative items-center justify-center flex-none py-2.5 px-2 rounded-md bg-blue-600 text-white shadow-mdl">
+          <button @click="signInWithGoogle" class="w-full flex relative items-center justify-center flex-none py-2.5 px-2 rounded-md bg-blue-600 text-white shadow-mdl" aria-label="Sign In with Google">
             <span class="absolute left-2 bg-white rounded-md px-2 py-1">
               <iconify-icon icon="logos:google-icon" inline></iconify-icon>
             </span>
