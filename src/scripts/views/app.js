@@ -82,7 +82,7 @@ class App {
     const { data: { session } } = await service.auth.session();
 
     if (!session) {
-      if (!url.includes('/sign')) {
+      if (!url.includes('/sign') && !url.includes('password')) {
         toastHelpers.error('You need to login first');
         redirect('#/signin');
         throw new Error('Unauthorized');

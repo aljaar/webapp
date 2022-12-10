@@ -25,32 +25,34 @@ class SignInView {
             </div>
           </template>
 
-          <div class="w-full rounded-lg bg-gray-50 px-4 border border-gray-300">
-            <input x-model="credential.email" type="email" placeholder="Input Your Email" class="my-3 w-full border-none bg-transparent outline-none focus:outline-none">
-          </div>
-
-          <div class="w-full rounded-lg bg-gray-50 px-4 border border-gray-300 relative" x-data="{ show: false }">
-            <input x-bind:type="!show ? 'password' : 'text'" x-model="credential.password" placeholder="Password" class="password my-3 w-full border-none bg-transparent outline-none focus:outline-none">
-
-            <iconify-icon x-show="show" @click="show = false" class="text-lg absolute top-[16px] right-5 cursor-pointer" icon="heroicons-outline:eye-off" inline></iconify-icon>
-            <iconify-icon x-show="!show" @click="show = true" class="text-lg absolute top-[16px] right-5 cursor-pointer" icon="heroicons-outline:eye" inline></iconify-icon>
-          </div>
-
-          <div class="flex items-center justify-between">
-            <div class="flex items-start">
-              <div class="flex items-center h-5">
-                <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300" required="">
-              </div>
-              <div class="ml-3 text-sm">
-                <label for="remember" class="text-black">Remember me</label>
-              </div>
+          <form class="space-y-4" @submit.prevent="signIn">
+            <div class="w-full rounded-lg bg-gray-50 px-4 border border-gray-300">
+              <input x-model="credential.email" type="email" placeholder="Input Your Email" class="my-3 w-full border-none bg-transparent outline-none focus:outline-none">
             </div>
-            <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot Password?</a>
-          </div>
 
-          <button @click="signIn" class="links w-full rounded-md bg-green-600 shadow-md py-3 font-semibold text-white" aria-label="Sign In">
-            Sign In
-          </button>
+            <div class="w-full rounded-lg bg-gray-50 px-4 border border-gray-300 relative" x-data="{ show: false }">
+              <input x-bind:type="!show ? 'password' : 'text'" x-model="credential.password" placeholder="Password" class="password my-3 w-full border-none bg-transparent outline-none focus:outline-none">
+
+              <iconify-icon x-show="show" @click="show = false" class="text-lg absolute top-[16px] right-5 cursor-pointer" icon="heroicons-outline:eye-off" inline></iconify-icon>
+              <iconify-icon x-show="!show" @click="show = true" class="text-lg absolute top-[16px] right-5 cursor-pointer" icon="heroicons-outline:eye" inline></iconify-icon>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300">
+                </div>
+                <div class="ml-3 text-sm">
+                  <label for="remember" class="text-black">Remember me</label>
+                </div>
+              </div>
+              <a href="/#/forgot-password" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="links w-full rounded-md bg-green-600 shadow-md py-3 font-semibold text-white" aria-label="Sign In">
+              Sign In
+            </button>
+          </form>
         </div>
 
         <div class="flex justify-center items-center text-sm">
