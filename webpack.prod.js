@@ -1,6 +1,7 @@
 const path = require('path');
 const { merge } = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const { GenerateSW } = require('workbox-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -40,6 +41,10 @@ module.exports = merge(common, {
         },
       },
     },
+    minimizer: [
+      '...',
+      new CssMinimizerPlugin(),
+    ],
   },
   module: {
     rules: [
