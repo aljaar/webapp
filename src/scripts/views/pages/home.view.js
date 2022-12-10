@@ -67,17 +67,15 @@ class HomeView {
 
         <!-- Empty Product Lists -->
         <template x-if="!isLoading && items.length === 0">
-          <div class="flex gap-4 items-center">
-            <img src="images/donation.webp" class="w-36" alt="Donation">
+          <div class="flex flex-col gap-4 items-center text-center">
+            <img src="images/donation.webp" width="144px" height="144px" class="w-36" alt="Donation">
 
-            <div class="flex flex-1 flex-col items-start">
-              <p class="text-sm text-gray-700">Belum ada makanan atau barang tidak terpakai yang dibagikan disekitar anda saat ini. Jadilah yang pertama!</p>
-              <br>
-              <a href="/#/product" class="text-sm text-gray-800 bg-gray-100 hover:bg-gray-800 hover:text-gray-50 rounded-md px-4 py-2">
-                Tambahkan Sekarang
-                <iconify-icon class="text-lg" icon="material-symbols:arrow-right-alt" inline></iconify-icon>
-              </a>
-            </div>
+            <p class="text-sm text-gray-700">Belum ada makanan atau barang tidak terpakai yang dibagikan disekitar anda saat ini. Jadilah yang pertama!</p>
+
+            <a href="/#/product" class="text-sm text-gray-800 bg-gray-100 hover:bg-gray-800 hover:text-gray-50 rounded-md px-4 py-2">
+              Tambahkan Sekarang
+              <iconify-icon class="text-lg" icon="material-symbols:arrow-right-alt" inline></iconify-icon>
+            </a>
           </div>
         </template>
 
