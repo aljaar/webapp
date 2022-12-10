@@ -61,9 +61,12 @@ class ResetPasswordView {
       password_confirm: '',
       isEligible: false,
       init() {
-        service.emitter.on('aljaar:auth:recovery', () => {
+        const user = service.user.me();
+        const recovery = localStorage.getItem('recovery-email');
+
+        if (recovery === user.email) {
           this.isEligible = true;
-        });
+        }
       },
       isPasswordMatch() {
         return !((this.password_confirm !== '') && (this.password !== this.password_confirm));
@@ -79,13 +82,13 @@ class ResetPasswordView {
 
         await delay(300);
         toastHelpers.dismiss(loading);
+        localStorage.removeItem('recovery-email');
 
         if (error) {
           toastHelpers.error('Whopss, terdapat kesalahan ketika mengubah password.');
         } else {
           toastHelpers.success('Password berhasil diubah.');
-
-          redirect('#/signin');
+          redirect('#/profile');
         }
       },
     }));

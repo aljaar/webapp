@@ -48,6 +48,7 @@ class ForgotPasswordView {
         if (error) {
           toastHelpers.error('Whopss, gagal melakukan reset password atau email tidak ditemukan.');
         } else {
+          localStorage.setItem('recovery-email', this.email);
           toastHelpers.success('Berhasil, silahkan cek email anda.');
         }
       },
