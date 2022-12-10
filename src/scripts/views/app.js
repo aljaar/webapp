@@ -52,7 +52,8 @@ class App {
     const url = UrlParser.parseActiveUrlWithCombiner();
 
     try {
-      const page = await routes[url];
+      let page = await routes[url]();
+      if (page.default) page = page.default;
 
       await this.beforeRenderPage(url);
       this._content.innerHTML = await page.render();

@@ -154,7 +154,6 @@ class HomeView {
       },
       neighbor_count: 0,
       async init() {
-        console.log('reinit');
         try {
           await this.permissionCheck();
           await this.fetchProducts();
