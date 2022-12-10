@@ -13,7 +13,7 @@ function Aljaar({ supabase }) {
     tags: [],
   };
   const redirect = {
-    onResetPassword: 'http://localhost:5000/#/reset-password',
+    onResetPassword: 'https://apps.aljaar.my.id/#/reset-password',
   };
 
   const { data: { publicUrl: publicAvatar } } = supabase.storage
