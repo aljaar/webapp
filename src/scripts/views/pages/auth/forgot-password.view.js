@@ -40,8 +40,8 @@ class ForgotPasswordView {
         }
 
         const loading = toastHelpers.loading();
-        const { error, data } = await service.auth.resetPassword(this.email);
-        console.log(error, data);
+        const { error } = await service.auth.resetPassword(this.email);
+
         await delay(300);
         toastHelpers.dismiss(loading);
 

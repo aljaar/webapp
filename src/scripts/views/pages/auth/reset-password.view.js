@@ -77,8 +77,7 @@ class ResetPasswordView {
         }
 
         const loading = toastHelpers.loading();
-        const { error, data } = await service.auth.updatePassword(this.password);
-        console.log(error, data);
+        const { error } = await service.auth.updatePassword(this.password);
 
         await delay(300);
         toastHelpers.dismiss(loading);
