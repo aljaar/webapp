@@ -1,9 +1,15 @@
 import { v4 as uuid } from 'uuid';
 import {
-  emitter, wrapper, useProduct, useGeoJson, useGoogleMaps, geographyToCoordinates, coordinateEncoder,
+  emitter,
+  wrapper,
+  useProduct,
+  useGeoJson,
+  useGoogleMaps,
+  geographyToCoordinates,
+  coordinateEncoder,
 } from './helpers/wrapper';
 import * as validator from './helpers/validate';
-import { service } from '.';
+import { redirect } from '../utils/helpers';
 
 function Aljaar({ supabase }) {
   const states = {
@@ -12,11 +18,13 @@ function Aljaar({ supabase }) {
     user: null,
     tags: [],
   };
-  const redirect = {
+  const redirectUri = {
     onResetPassword: 'https://apps.aljaar.my.id/#/reset-password',
   };
 
-  const { data: { publicUrl: publicAvatar } } = supabase.storage
+  const {
+    data: { publicUrl: publicAvatar },
+  } = supabase.storage
     .from('avatars')
     .getPublicUrl('public/avatar.default.webp');
 
@@ -49,8 +57,7 @@ function Aljaar({ supabase }) {
         emitter.emit('aljaar:auth:logout', { event, session });
         break;
       case 'PASSWORD_RECOVERY':
-        console.log({ event, session });
-        window.location.hash = '#/reset-password';
+        redirect('#/reset-password');
         break;
       default:
         emitter.emit('aljaar:on:auth', { event, session });
@@ -67,13 +74,24 @@ function Aljaar({ supabase }) {
         return wrapper(() => supabase.auth.getSession());
       },
       async user() {
-        const { data: { session: { user } } } = await supabase.auth.getSession();
-        const { data: profile } = await supabase.from('profiles').select().eq('user_id', user.id).single();
+        const {
+          data: {
+            session: { user },
+          },
+        } = await supabase.auth.getSession();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select()
+          .eq('user_id', user.id)
+          .single();
 
         user.profile = profile;
 
         if (profile.location) {
-          user.location = await geographyToCoordinates(supabase, profile.location);
+          user.location = await geographyToCoordinates(
+            supabase,
+            profile.location,
+          );
         } else {
           user.location = false;
         }
@@ -123,7 +141,7 @@ function Aljaar({ supabase }) {
       },
       resetPassword(email) {
         return wrapper(() => supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: redirect.onResetPassword,
+          redirectTo: redirectUri.onResetPassword,
         }));
       },
       updatePassword(password) {
@@ -134,22 +152,30 @@ function Aljaar({ supabase }) {
       updateWithCurrentLocation() {
         return new Promise((resolve) => {
           if (!navigator.geolocation) {
-            resolve({ data: null, error: { message: "Can't get user current location" } });
+            resolve({
+              data: null,
+              error: { message: "Can't get user current location" },
+            });
           }
 
-          navigator.geolocation.getCurrentPosition((position) => {
-            const { error } = wrapper(() => supabase.from('profiles').update({
-              location: `SRID=4326;POINT(${position.coords.longitude} ${position.coords.latitude})`,
-            }).eq('user_id', states.user.id));
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { error } = wrapper(() => supabase
+                .from('profiles')
+                .update({
+                  location: `SRID=4326;POINT(${position.coords.longitude} ${position.coords.latitude})`,
+                })
+                .eq('user_id', states.user.id));
 
-            resolve({ data: position.coords, error });
-          }, () => {
-
-          }, {
-            maximumAge: 60000,
-            timeout: 5000,
-            enableHighAccuracy: true,
-          });
+              resolve({ data: position.coords, error });
+            },
+            () => {},
+            {
+              maximumAge: 60000,
+              timeout: 5000,
+              enableHighAccuracy: true,
+            },
+          );
         });
       },
     },
@@ -162,13 +188,17 @@ function Aljaar({ supabase }) {
           redirect('#/profile');
         }
 
-        const { data: profile } = await supabase.from('profiles')
+        const { data: profile } = await supabase
+          .from('profiles')
           .select()
           .eq('id', id)
           .single();
 
         if (profile.location) {
-          profile.user_location = await geographyToCoordinates(supabase, profile.location);
+          profile.user_location = await geographyToCoordinates(
+            supabase,
+            profile.location,
+          );
         } else {
           profile.user_location = false;
         }
@@ -197,17 +227,18 @@ function Aljaar({ supabase }) {
             .from('avatars')
             .upload(`${states.user.id}/${filename}`, data.avatar));
 
-          const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(avatar.path);
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from('avatars').getPublicUrl(avatar.path);
 
           update.avatar_url = publicUrl;
         }
 
-        return wrapper(() => supabase.from('profiles')
-          .update(update)
-          .eq('user_id', states.user.id));
+        return wrapper(() => supabase.from('profiles').update(update).eq('user_id', states.user.id));
       },
       getHelpedPeopleCount() {
-        return wrapper(() => supabase.from('transactions')
+        return wrapper(() => supabase
+          .from('transactions')
           .select('*', { count: 'exact', head: true })
           .eq('owner_id', states.user.id)
           .eq('status', 'approved'));
@@ -230,22 +261,27 @@ function Aljaar({ supabase }) {
         return stats[0];
       },
       updateLocation(position) {
-        return wrapper(() => supabase.from('profiles').update({
-          location: `SRID=4326;POINT(${position.lng} ${position.lat})`,
-        }).eq('user_id', states.user.id));
+        return wrapper(() => supabase
+          .from('profiles')
+          .update({
+            location: `SRID=4326;POINT(${position.lng} ${position.lat})`,
+          })
+          .eq('user_id', states.user.id));
       },
       async getAddress(user, update = false) {
         if (user.profile.address && !update) return user.profile.address;
 
-        const { result: { address } } = await coordinateEncoder([
-          user.location.lat,
-          user.location.lon,
-        ]);
+        const {
+          result: { address },
+        } = await coordinateEncoder([user.location.lat, user.location.lon]);
 
         if (user.profile.address !== address || update) {
-          await supabase.from('profiles').update({
-            address,
-          }).eq('id', user.profile.id);
+          await supabase
+            .from('profiles')
+            .update({
+              address,
+            })
+            .eq('id', user.profile.id);
         }
 
         return address;
@@ -255,7 +291,9 @@ function Aljaar({ supabase }) {
       async detail(id) {
         const productResult = await wrapper(() => supabase
           .from('products')
-          .select('*, product_images ( image ), likes (count), product_tags ( tags (id, name) ), product_analytics ( view )')
+          .select(
+            '*, product_images ( image ), likes (count), product_tags ( tags (id, name) ), product_analytics ( view )',
+          )
           .eq('id', id)
           .maybeSingle());
 
@@ -263,8 +301,10 @@ function Aljaar({ supabase }) {
 
         const { data: product } = productResult;
 
-        const isOwner = (product.user_id === states.user.id);
-        const transactionRPC = isOwner ? 'get_transactions' : 'count_transactions';
+        const isOwner = product.user_id === states.user.id;
+        const transactionRPC = isOwner
+          ? 'get_transactions'
+          : 'count_transactions';
 
         const [transaction, profile] = await Promise.all([
           wrapper(() => supabase.rpc(transactionRPC, {
@@ -290,7 +330,9 @@ function Aljaar({ supabase }) {
       async all() {
         const { data } = await wrapper(() => supabase
           .from('products')
-          .select('*, product_images ( image ), likes (count), product_tags ( tags (id, name) ), product_analytics ( view )')
+          .select(
+            '*, product_images ( image ), likes (count), product_tags ( tags (id, name) ), product_analytics ( view )',
+          )
           .eq('user_id', states.user?.id)
           .neq('status', 'deleted'));
 
@@ -352,27 +394,34 @@ function Aljaar({ supabase }) {
         // }
 
         const tasks = [
-          wrapper(() => supabase.from('products').update({
-            ...product,
-          }).eq('id', id)),
+          wrapper(() => supabase
+            .from('products')
+            .update({
+              ...product,
+            })
+            .eq('id', id)),
         ];
 
         if (tags.isChanged) {
           if (tags.added.length) {
             const addedTags = tags.added.map((tag) => tag.id);
 
-            tasks.push(wrapper(() => supabase.rpc('add_product_tag', {
-              p_id: parseInt(id, 10),
-              tags: addedTags,
-            })));
+            tasks.push(
+              wrapper(() => supabase.rpc('add_product_tag', {
+                p_id: parseInt(id, 10),
+                tags: addedTags,
+              })),
+            );
           }
           if (tags.deleted.length) {
             const deletedTags = tags.deleted.map((tag) => tag.id);
 
-            tasks.push(wrapper(() => supabase.rpc('delete_product_tag', {
-              p_id: parseInt(id, 10),
-              tags: deletedTags,
-            })));
+            tasks.push(
+              wrapper(() => supabase.rpc('delete_product_tag', {
+                p_id: parseInt(id, 10),
+                tags: deletedTags,
+              })),
+            );
           }
         }
 
@@ -388,9 +437,13 @@ function Aljaar({ supabase }) {
         // return wrapper(() => supabase.rpc('delete_product', {
         //   p_id: id,
         // }));
-        return wrapper(() => supabase.from('products').update({
-          status: 'deleted',
-        }).eq('id', id).eq('user_id', states.user.id));
+        return wrapper(() => supabase
+          .from('products')
+          .update({
+            status: 'deleted',
+          })
+          .eq('id', id)
+          .eq('user_id', states.user.id));
       },
       async like(id) {
         return wrapper(() => supabase.rpc('like_product', {
@@ -409,7 +462,10 @@ function Aljaar({ supabase }) {
         const filters = [];
 
         if (filter.search && filter.search !== '') {
-          filters.push(['or', `title.wfts.${filter.search.toLowerCase()},description.wfts.${filter.search.toLowerCase()}`]);
+          filters.push([
+            'or',
+            `title.wfts.${filter.search.toLowerCase()},description.wfts.${filter.search.toLowerCase()}`,
+          ]);
         }
 
         if (filter.category && filter.category !== '') {
@@ -417,12 +473,19 @@ function Aljaar({ supabase }) {
         }
 
         if (filter.sort && filter.sort.column && filter.sort.type) {
-          filters.push(['order', filter.sort.column, { ascending: (filter.sort.type === 'asc') }]);
+          filters.push([
+            'order',
+            filter.sort.column,
+            { ascending: filter.sort.type === 'asc' },
+          ]);
         }
 
-        const query = filters.reduce((chain, [prev, ...args]) => chain[prev](...args), supabase.rpc('get_near_products', {
-          radius,
-        }));
+        const query = filters.reduce(
+          (chain, [prev, ...args]) => chain[prev](...args),
+          supabase.rpc('get_near_products', {
+            radius,
+          }),
+        );
 
         return wrapper(() => query);
       },
@@ -439,17 +502,22 @@ function Aljaar({ supabase }) {
     },
     tags: {
       all() {
-        return wrapper(() => supabase.from('tags').select('id, name'))
-          .then((result) => {
+        return wrapper(() => supabase.from('tags').select('id, name')).then(
+          (result) => {
             if (result.error) return result;
 
             states.tags = result.data;
 
             return result;
-          });
+          },
+        );
       },
       async search(query) {
-        return wrapper(() => supabase.from('tags').select('id, name').limit(8).ilike('name', `%${query}%`));
+        return wrapper(() => supabase
+          .from('tags')
+          .select('id, name')
+          .limit(8)
+          .ilike('name', `%${query}%`));
       },
       useCache() {
         return {
@@ -457,20 +525,22 @@ function Aljaar({ supabase }) {
             return states.tags;
           },
           search(query) {
-            return states.tags.filter((item) => (item.name.toLowerCase()
-              .includes(query.toLowerCase())));
+            return states.tags.filter((item) => item.name
+              .toLowerCase().includes(query.toLowerCase()));
           },
         };
       },
     },
     transaction: {
       async waiting() {
-        const { data: transactions } = await supabase.from('transactions')
+        const { data: transactions } = await supabase
+          .from('transactions')
           .select('*, products ( title, category, product_images (image) )')
           .eq('owner_id', states.user.id);
 
         const userId = transactions.map((tx) => tx.user_id);
-        const { data: users } = await supabase.from('profiles')
+        const { data: users } = await supabase
+          .from('profiles')
           .select('user_id, full_name, avatar_url, status')
           .in('user_id', userId);
 
@@ -487,14 +557,16 @@ function Aljaar({ supabase }) {
         };
       },
       async waitingCount() {
-        return wrapper(() => supabase.from('transactions')
+        return wrapper(() => supabase
+          .from('transactions')
           .select('*', { count: 'exact', head: false })
           .eq('owner_id', states.user.id)
           .eq('status', 'waiting'));
       },
       // List of approved transactions and ready to pickup and need some review
       needReviews() {
-        return wrapper(() => supabase.from('transactions')
+        return wrapper(() => supabase
+          .from('transactions')
           .select('*, products ( title, product_images (image) )')
           .eq('user_id', states.user.id)
           .eq('status', 'approved')
@@ -502,8 +574,11 @@ function Aljaar({ supabase }) {
       },
       async detail(id, isRequest = false) {
         const column = isRequest ? 'owner_id' : 'user_id';
-        const result = await wrapper(() => supabase.from('transactions')
-          .select('*, products (id, title, category, drop_time, drop_point, user_id, product_images (image)), transaction_logs (status, created_at)')
+        const result = await wrapper(() => supabase
+          .from('transactions')
+          .select(
+            '*, products (id, title, category, drop_time, drop_point, user_id, product_images (image)), transaction_logs (status, created_at)',
+          )
           .eq(column, states.user.id)
           .eq('id', id)
           .single());
@@ -511,15 +586,17 @@ function Aljaar({ supabase }) {
         if (!result.error) {
           const userType = !isRequest ? 'owner_id' : 'user_id';
           const userId = result.data[userType];
-          const { data: profile } = await supabase.from('profiles')
+          const { data: profile } = await supabase
+            .from('profiles')
             .select('id, full_name, avatar_url, phone')
             .eq('user_id', userId)
             .single();
 
           result.data.products = {
             ...result.data.products,
-            product_images: usePublicUrl(result.data.products.product_images[0].image)
-              .data.publicUrl,
+            product_images: usePublicUrl(
+              result.data.products.product_images[0].image,
+            ).data.publicUrl,
           };
 
           result.data.profile = profile;
@@ -528,7 +605,8 @@ function Aljaar({ supabase }) {
         return result;
       },
       async lists() {
-        const result = await wrapper(() => supabase.from('transactions')
+        const result = await wrapper(() => supabase
+          .from('transactions')
           .select('*, products (id, title, category, product_images (image))')
           .eq('user_id', states.user.id));
 
@@ -537,7 +615,9 @@ function Aljaar({ supabase }) {
             ...item,
             products: {
               ...item.products,
-              product_images: usePublicUrl(item.products.product_images[0].image).data.publicUrl,
+              product_images: usePublicUrl(
+                item.products.product_images[0].image,
+              ).data.publicUrl,
             },
           }));
         }
