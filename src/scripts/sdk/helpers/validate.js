@@ -51,6 +51,7 @@ export const editProduct = (data) => {
       is: joi.string().valid('non-food').required(),
       then: joi.string().label('Used Since').optional(),
     }),
+    drop_time: joi.array().items(joi.string().label('Waktu Ambil')).label('Waktu Ambil').required(),
     expired_at: joi.when('category', {
       is: joi.string().valid('food').required(),
       then: joi.date().iso().label('Expired Date').optional(),
