@@ -1,4 +1,5 @@
 import { service } from '../../../sdk';
+import { format } from '../../../utils/date';
 import { delay } from '../../../utils/helpers';
 import { createEmptyListTemplate, createPageHeader, listsSkeletonLoading } from '../../templates/creator.template';
 
@@ -54,7 +55,7 @@ class TransactionListsView {
                       </template>
                       <div class="flex flex-col">
                         <span class="text-[12px] font-bold capitalize" x-text="transaction.products.category === 'food' ? 'Food' : 'Non Food'"></span>
-                        <span class="text-[11px] text-gray-800">11 Oktober 2022</span>
+                        <span class="text-[11px] text-gray-800" x-text="dateFormat(transaction.created_at)"></span>
                       </div>
                     </div>
 
@@ -90,7 +91,7 @@ class TransactionListsView {
                     </template>
                     <div class="flex flex-col">
                       <span class="text-[12px] font-bold capitalize" x-text="transaction.products.category === 'food' ? 'Food' : 'Non Food'"></span>
-                      <span class="text-[11px] text-gray-800">11 Oktober 2022</span>
+                      <span class="text-[11px] text-gray-800" x-text="dateFormat(transaction.created_at)"></span>
                     </div>
                   </div>
 
@@ -157,6 +158,9 @@ class TransactionListsView {
           'bg-red-100 text-red-600': (status === 'rejected'),
           'bg-emerald-100 text-green-600': (status === 'success'),
         };
+      },
+      dateFormat(date) {
+        return format(date, 'DD MMMM YYYY');
       },
     }));
   }
